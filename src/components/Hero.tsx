@@ -65,7 +65,7 @@ const Hero = ({ onContactClick }: { onContactClick: () => void }) => {
                 onClick={onContactClick}
                 className="pill-button mt-10 inline-flex items-center gap-2"
               >
-                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: "hsl(142, 71%, 45%)" }} />
                 Contact Me
               </button>
             </motion.div>

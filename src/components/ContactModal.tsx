@@ -49,23 +49,23 @@ const ContactModal = ({ isOpen, onClose }: ContactModalProps) => {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl">
               <a
-                href="mailto:hello@alvinmichael.com"
+                href="mailto:michaelalvin.media@gmail.com"
                 className="surface-card rounded-3xl p-6 flex flex-col items-center text-center gap-3 group transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_0_1px_hsla(0,0%,100%,0.1)]"
               >
                 <Mail size={24} className="text-muted-foreground group-hover:text-foreground transition-colors" />
                 <span className="text-sm font-medium text-foreground">Email</span>
-                <span className="text-xs text-muted-foreground">hello@alvinmichael.com</span>
+                <span className="text-xs text-muted-foreground">michaelalvin.media@gmail.com</span>
               </a>
 
               <a
-                href="https://instagram.com/alvinmichael"
+                href="https://instagram.com/_michaelalvin_"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="surface-card rounded-3xl p-6 flex flex-col items-center text-center gap-3 group transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_0_1px_hsla(0,0%,100%,0.1)]"
               >
                 <Instagram size={24} className="text-muted-foreground group-hover:text-foreground transition-colors" />
                 <span className="text-sm font-medium text-foreground">Instagram</span>
-                <span className="text-xs text-muted-foreground">@alvinmichael</span>
+                <span className="text-xs text-muted-foreground">@_michaelalvin_</span>
               </a>
 
               <a
@@ -74,7 +74,7 @@ const ContactModal = ({ isOpen, onClose }: ContactModalProps) => {
               >
                 <Calendar size={24} className="text-muted-foreground group-hover:text-foreground transition-colors" />
                 <span className="text-sm font-medium text-foreground">Book a Call</span>
-                <span className="text-xs text-muted-foreground">Schedule a session</span>
+                <span className="text-xs text-muted-foreground">Schedule a session<br />+254 797 347 822</span>
               </a>
             </div>
           </motion.div>

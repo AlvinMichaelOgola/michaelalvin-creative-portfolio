@@ -6,8 +6,21 @@ import GearVault from "@/components/GearVault";
 import Footer from "@/components/Footer";
 import ContactModal from "@/components/ContactModal";
 
+import { useEffect } from "react";
+
 const Index = () => {
   const [contactOpen, setContactOpen] = useState(false);
+
+  useEffect(() => {
+    if (contactOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [contactOpen]);
 
   return (
     <div className="bg-background text-foreground min-h-screen overflow-x-hidden">

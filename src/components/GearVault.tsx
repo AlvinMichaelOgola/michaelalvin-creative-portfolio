@@ -1,10 +1,12 @@
 import { motion } from "framer-motion";
 
 const gear = [
-  { title: "Sony a7iii", subtitle: "85mm f/1.4", desc: "Primary body for portraits & commercial work" },
+  { title: "Sony a7iii", subtitle: "85mm f/1.8, 50mm F1.8 and 24-70mm F2.8", desc: "Primary body for portraits, video & commercial work" },
   { title: "Nikon D5300", subtitle: "18-55mm & 35mm", desc: "Backup & street photography" },
   { title: "Continuous Lighting", subtitle: "Aputure 300d II", desc: "Studio & video lighting kit" },
-  { title: "iPhone 14", subtitle: "ProRAW", desc: "Run-and-gun & behind the scenes" },
+  { title: "iPhone 14", subtitle: "Versatile and handy on the go", desc: "Run-and-gun & behind the scenes" },
+  { title: "Nikon Z6III", subtitle: "Commercial Grade Video Production", desc: "Primary High Value Video Production Body" }
+
 ];
 
 const GearVault = () => {

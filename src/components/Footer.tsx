@@ -33,7 +33,7 @@ const Footer = ({ onContactClick }: { onContactClick: () => void }) => {
         viewport={{ once: true }}
         transition={{ duration: 0.6, delay: 0.4 }}
       >
-        © 2024 Alvin Michael. All rights reserved.
+        © {new Date().getFullYear()} Alvin Michael. All rights reserved.
       </motion.p>
     </footer>
   );

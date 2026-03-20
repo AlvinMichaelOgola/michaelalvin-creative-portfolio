@@ -1,9 +1,7 @@
 import { motion } from "framer-motion";
 
 const videos = [
-  { id: "dQw4w9WgXcQ", title: "Commercial Reel 2024" },
-  { id: "LXb3EKWsInQ", title: "Behind the Scenes" },
-  { id: "jNQXAC9IVRw", title: "Adventure Series" },
+  { id: "-NVZB0Aay0Y?si=6wgUsHMsKBu2iNb_", title: "Orpul - A Masai Story" },
 ];
 
 const VideoTheater = () => {

@@ -6,9 +6,38 @@ const Hero = ({ onContactClick }: { onContactClick: () => void }) => {
     <section className="min-h-screen section-padding flex items-center py-24">
       <div className="w-full max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* Portrait */}
+          {/* Portrait and Name for mobile */}
+          <div className="flex flex-col items-center w-full lg:hidden mb-8">
+            <motion.div
+              className="order-1"
+              initial={{ opacity: 0, scale: 0.95, filter: 'blur(8px)' }}
+              animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+              transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <div className="relative w-32 h-32 rounded-full overflow-hidden mx-auto">
+                <img
+                  src={heroPortrait}
+                  alt="Alvin Michael — visual storyteller based in Nairobi"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent" />
+              </div>
+            </motion.div>
+            <motion.h1
+              className="mt-4 text-3xl font-bold tracking-tight leading-tight text-foreground text-center"
+              initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            >
+              Alvin
+              <br />
+              Michael.
+            </motion.h1>
+          </div>
+
+          {/* Portrait for desktop */}
           <motion.div
-            className="lg:col-span-5 order-1"
+            className="lg:col-span-5 order-1 hidden lg:block"
             initial={{ opacity: 0, scale: 0.95, filter: "blur(8px)" }}
             animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
             transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
@@ -26,7 +55,7 @@ const Hero = ({ onContactClick }: { onContactClick: () => void }) => {
           {/* Content */}
           <div className="lg:col-span-7 order-2 flex flex-col justify-center">
             <motion.h1
-              className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tight leading-[0.9] text-foreground"
+              className="hidden lg:block text-6xl md:text-8xl lg:text-9xl font-bold tracking-tight leading-[0.9] text-foreground"
               initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
@@ -63,7 +92,7 @@ const Hero = ({ onContactClick }: { onContactClick: () => void }) => {
             >
               <button
                 onClick={onContactClick}
-                className="pill-button mt-10 inline-flex items-center gap-2"
+                className="pill-button mt-6 md:mt-10 inline-flex items-center gap-2"
               >
                 <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: "hsl(142, 71%, 45%)" }} />
                 Contact Me

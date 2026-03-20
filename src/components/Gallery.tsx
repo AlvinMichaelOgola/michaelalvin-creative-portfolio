@@ -1,42 +1,166 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-import commercial1 from "@/assets/gallery-commercial-1.jpg";
-import commercial2 from "@/assets/gallery-commercial-2.jpg";
-import portrait1 from "@/assets/gallery-portrait-1.jpg";
-import portrait2 from "@/assets/gallery-portrait-2.jpg";
-import automotive1 from "@/assets/gallery-automotive-1.jpg";
-import automotive2 from "@/assets/gallery-automotive-2.jpg";
-import adventure1 from "@/assets/gallery-adventure-1.jpg";
+import automotive_str1 from "@/assets/Automotive/strath_carshow/DSC_7676 (1).webp";
+import automotive_str2 from "@/assets/Automotive/strath_carshow/DSC_7717.webp";
+import automotive_str3 from "@/assets/Automotive/strath_carshow/DSC_7720.webp";
+import automotive_str4 from "@/assets/Automotive/strath_carshow/DSC_7731.webp";
+import automotive_str5 from "@/assets/Automotive/strath_carshow/DSC_7752.webp";
+import automotive_str6 from "@/assets/Automotive/strath_carshow/DSC_7778.webp";
+
+import automotive_green1 from "@/assets/Automotive/green_vw/WhatsApp Image 2026-03-20 at 18.15.59 (1).webp";
+import automotive_green2 from "@/assets/Automotive/green_vw/WhatsApp Image 2026-03-20 at 18.15.59 (2).webp";
+import automotive_green3 from "@/assets/Automotive/green_vw/WhatsApp Image 2026-03-20 at 18.15.59 (3).webp";
+import automotive_green4 from "@/assets/Automotive/green_vw/WhatsApp Image 2026-03-20 at 18.15.59.webp";
+
+import adventure1 from "@/assets/Adventure_photos/A7309381.jpg";
+import adventure2 from "@/assets/Adventure_photos/A7309388.jpg";
+import adventure3 from "@/assets/Adventure_photos/A7309402.jpg";
+import adventure4 from "@/assets/Adventure_photos/A7309437.jpg";
+import adventure5 from "@/assets/Adventure_photos/A7309466.jpg";
+import adventure6 from "@/assets/Adventure_photos/A7309543.jpg";
+
 import creative1 from "@/assets/gallery-creative-1.jpg";
 
-type Category = "All" | "Commercial" | "Portrait" | "Automotive" | "Adventure" | "Creative";
+import Asalka1 from "@/assets/Product_photos/Asalka 1.jpg";
+import Asalka2 from "@/assets/Product_photos/Asalka 2.jpg";
+import Asalka3 from "@/assets/Product_photos/Asalka 3.jpg";
+
+import ocean_sk1 from "@/assets/Nature/Ocean/DSC_7865.webp";
+import ocean_sk2 from "@/assets/Nature/Ocean/DSC_7869.webp";
+import ocean_sk3 from "@/assets/Nature/Ocean/DSC_7871.webp";
+import ocean_sk4 from "@/assets/Nature/Ocean/DSC_7884.webp";
+
+import portrait_aus1 from "@/assets/portraits/austin/DSC_8383.webp";
+import portrait_aus2 from "@/assets/portraits/austin/DSC_8385 (1).webp";
+import portrait_aus3 from "@/assets/portraits/austin/DSC_8392.webp";
+import portrait_aus4 from "@/assets/portraits/austin/DSC_8394.webp";
+
+import portrait_niisha_pr1 from "@/assets/portraits/hafsah and niisha/niisha_pr1.webp";
+import portrait_niisha_pr2 from "@/assets/portraits/hafsah and niisha/niisha_pr2.webp";
+import portrait_hafsah_pr1 from "@/assets/portraits/hafsah and niisha/hafsah_ptr1.webp";
+import portrait_hafsah_pr2 from "@/assets/portraits/hafsah and niisha/hafsah_pr2.webp";
+
+import creative_hf1 from "@/assets/creative/hafsah/hafsah1.webp";
+import creative_hf2 from "@/assets/creative/hafsah/hafsah2.webp";
+import creative_hf3 from "@/assets/creative/hafsah/hafsah5.webp";
+
+import creative_gl1 from "@/assets/creative/glovis/DSC_6894.webp";
+import creative_gl2 from "@/assets/creative/glovis/DSC_6896.webp";
+import creative_gl3 from "@/assets/creative/glovis/DSC_6899.webp";
+import creative_gl4 from "@/assets/creative/glovis/DSC_6901 (1).webp";
+import creative_gl5 from "@/assets/creative/glovis/DSC_6908.webp";
+
+import assignment_dn_1 from "@/assets/Assignments/dandora/DSC_8129.webp";
+import assignment_dn_2 from "@/assets/Assignments/dandora/DSC_8131.webp";
+import assignment_dn_3 from "@/assets/Assignments/dandora/DSC_8136.webp";
+import assignment_dn_4 from "@/assets/Assignments/dandora/DSC_8174.webp";
+import assignment_dn_5 from "@/assets/Assignments/dandora/DSC_8178.webp";
+import assignment_dn_6 from "@/assets/Assignments/dandora/DSC_8188.webp";
+import assignment_dn_7 from "@/assets/Assignments/dandora/DSC_8200.webp";
+import assignment_dn_8 from "@/assets/Assignments/dandora/DSC_8214.webp";
+
+
+
+
+
+
+type Category = "All" | "Ocean" | "Portraits" | "Automotive" | "Adventure" | "Creative" | "Product" | "A Mood" | "Assignments";
 
 interface GalleryItem {
   src: string;
   alt: string;
   category: Exclude<Category, "All">;
+  order?: number;
   tall?: boolean;
+  width?: boolean;
 }
 
 const items: GalleryItem[] = [
-  { src: commercial1, alt: "Commercial editorial fashion", category: "Commercial", tall: true },
-  { src: portrait1, alt: "Window-lit portrait", category: "Portrait" },
-  { src: automotive1, alt: "Luxury sports car at dusk", category: "Automotive" },
-  { src: adventure1, alt: "Mountain cliff silhouette", category: "Adventure" },
-  { src: creative1, alt: "Double exposure cityscape", category: "Creative", tall: true },
-  { src: portrait2, alt: "Elder portrait close-up", category: "Portrait", tall: true },
-  { src: commercial2, alt: "Luxury watch product shot", category: "Commercial" },
-  { src: automotive2, alt: "Vintage chrome detail", category: "Automotive", tall: true },
+  // Ocean
+  { src: ocean_sk1, alt: "The Ocean, a boat and water", category: "Ocean", tall: true, order: 1 },
+  { src: ocean_sk2, alt: "Close up of wave ripples", category: "Ocean", order: 2 },
+  { src: ocean_sk3, alt: "The Ocean, cinematic view", category: "Ocean", order: 3 },
+  { src: ocean_sk4, alt: "The Ocean, sunset view", category: "Ocean", order: 4 },
+
+  // Automotive
+  { src: automotive_str1, alt: "Luxury sports car at dusk", category: "Automotive", order: 1 },
+  { src: automotive_str2, alt: "Vintage chrome detail", category: "Automotive", tall: true, order: 2 },
+  { src: automotive_str3, alt: "Classic car front view", category: "Automotive", order: 3 },
+  { src: automotive_str4, alt: "Car interior detail", category: "Automotive", order: 4 },
+  { src: automotive_str5, alt: "Car engine close-up", category: "Automotive", order: 5 },
+  { src: automotive_str6, alt: "Car at night", category: "Automotive", tall: true, order: 6 },
+  { src: automotive_green1, alt: "Car at night", category: "Automotive", tall: true, order: 7 },
+  { src: automotive_green4, alt: "Car at night", category: "Automotive", tall: true, order: 8 },
+
+  // Adventure
+  { src: adventure1, alt: "Mountain cliff silhouette", category: "Adventure", order: 1 },
+  { src: adventure2, alt: "Hills", category: "Adventure", order: 2 },
+  { src: adventure3, alt: "Plant close up", category: "Adventure", order: 3 },
+  { src: adventure4, alt: "Girl walking in trail", category: "Adventure", order: 4 },
+  { src: adventure5, alt: "Lone tree", category: "Adventure", tall: true, order: 5 },
+  { src: adventure6, alt: "House on Hill", category: "Adventure", order: 6 },
+
+  // Product
+  { src: Asalka1, alt: "Asalka product shot", category: "Product", tall: true, order: 1 },
+  { src: Asalka2, alt: "Asalka product shot", category: "Product", tall: true, order: 2 },
+
+  // Creative
+  { src: creative_hf1, alt: "Creative Hafsah shot", category: "Creative", tall: true, order: 1 },
+  { src: creative_hf2, alt: "Creative Hafsah shot", category: "Creative", tall: true, order: 2 },
+  { src: creative_hf3, alt: "Creative Hafsah shot", category: "Creative", tall: true, order: 3 },
+  { src: creative_gl4, alt: "Creative shot", category: "Creative", order: 4 },
+  { src: creative_gl5, alt: "Creative shot", category: "Creative", order: 5 },
+
+  // Portraits
+  { src: portrait_aus2, alt: "Elder portrait close-up", category: "Portraits", tall: true, order: 1 },
+  { src: portrait_niisha_pr2, alt: "Niisha portrait", category: "Portraits", order: 2 },
+  { src: portrait_niisha_pr1, alt: "Niisha portrait", category: "Portraits", order: 3 },
+  { src: portrait_hafsah_pr1, alt: "Hafsah portrait", category: "Portraits", order: 4 },
+  { src: portrait_hafsah_pr2, alt: "Hafsah portrait", category: "Portraits", order: 5 },
+  { src: portrait_aus3, alt: "Classic portrait", category: "Portraits", order: 6 },
+  { src: portrait_aus4, alt: "Modern portrait", category: "Portraits", tall: true, order: 7 },
+  { src: creative_gl2, alt: "Creative shot", category: "Portraits", order: 8 },
+  { src: creative_gl3, alt: "Creative shot", category: "Portraits", order: 9 },
+  { src: portrait_aus1, alt: "Window-lit portrait", category: "Portraits", order: 10 },
+
+  // Assignments
+  { src: assignment_dn_1, alt: "Dandora assignment", category: "Assignments", order: 2 },
+  { src: assignment_dn_2, alt: "Dandora assignment", category: "Assignments", order: 1 }, 
+  { src: assignment_dn_3, alt: "Dandora assignment", category: "Assignments", order: 3 },
+  { src: assignment_dn_4, alt: "Dandora assignment", category: "Assignments", order: 4 },
+  { src: assignment_dn_5, alt: "Dandora assignment", category: "Assignments", order: 5 },
+  { src: assignment_dn_6, alt: "Dandora assignment", category: "Assignments", order: 6 },
+  { src: assignment_dn_7, alt: "Dandora assignment", category: "Assignments", order: 7 },
+  { src: assignment_dn_8, alt: "Dandora assignment", category: "Assignments", order: 8 },
 ];
 
-const categories: Category[] = ["All", "Commercial", "Portrait", "Automotive", "Adventure", "Creative"];
+const categories: Category[] = ["All", "Assignments",  "Creative", "Portraits", "Automotive", "Ocean", "Product", "Adventure", "A Mood"];
 
 const Gallery = () => {
   const [active, setActive] = useState<Category>("All");
   const [lightbox, setLightbox] = useState<string | null>(null);
 
-  const filtered = active === "All" ? items : items.filter((i) => i.category === active);
+  let filtered = active === "All" ? items : items.filter((i) => i.category === active);
+  filtered = filtered.slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+  // Sticky logic
+  const filterRef = useRef<HTMLDivElement>(null);
+  const [hideFilter, setHideFilter] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const filter = filterRef.current;
+      const videoSection = document.getElementById('video');
+      if (filter && videoSection) {
+        const filterBottom = filter.getBoundingClientRect().bottom;
+        const videoTop = videoSection.getBoundingClientRect().top;
+        setHideFilter(videoTop <= filterBottom + 24); // 24px buffer
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <section className="section-padding py-32" id="gallery">
@@ -54,7 +178,8 @@ const Gallery = () => {
 
       {/* Filter Pills */}
       <motion.div
-        className="flex flex-wrap gap-2 mb-12"
+        ref={filterRef}
+        className={`flex flex-wrap gap-2 mb-12 z-30 bg-background/80 backdrop-blur sticky top-0 transition-opacity duration-300 ${hideFilter ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
         initial={{ opacity: 0, y: 12 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.3 }}
@@ -76,7 +201,7 @@ const Gallery = () => {
       </motion.div>
 
       {/* Masonry Grid */}
-      <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
+      <div className="columns-2 sm:columns-2 lg:columns-5 gap-5 space-y-5">
         <AnimatePresence mode="popLayout">
           {filtered.map((item, i) => (
             <motion.div
@@ -85,7 +210,7 @@ const Gallery = () => {
               initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.5, delay: i * 0.07, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.5, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
               className="break-inside-avoid cursor-pointer group"
               onClick={() => setLightbox(item.src)}
             >

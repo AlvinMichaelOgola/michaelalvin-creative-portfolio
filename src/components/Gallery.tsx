@@ -127,8 +127,8 @@ const items: GalleryItem[] = [
   // Assignments
   { src: assignment_dn_1, alt: "Dandora assignment", category: "Assignments", order: 2 },
   { src: assignment_dn_2, alt: "Dandora assignment", category: "Assignments", order: 1 }, 
-  { src: assignment_dn_3, alt: "Dandora assignment", category: "Assignments", order: 3 },
-  { src: assignment_dn_4, alt: "Dandora assignment", category: "Assignments", order: 4 },
+  { src: assignment_dn_3, alt: "Dandora assignment", category: "Assignments", order: 4 },
+  { src: assignment_dn_4, alt: "Dandora assignment", category: "Assignments", order: 3 },
   { src: assignment_dn_5, alt: "Dandora assignment", category: "Assignments", order: 5 },
   { src: assignment_dn_6, alt: "Dandora assignment", category: "Assignments", order: 6 },
   { src: assignment_dn_7, alt: "Dandora assignment", category: "Assignments", order: 7 },

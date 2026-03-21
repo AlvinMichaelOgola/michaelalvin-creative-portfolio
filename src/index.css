@@ -43,7 +43,8 @@
     --surface-dark: 50 4% 92%;
 
     --hero-stroke-color: #111111;
-    --accent-teal: 168 40% 50%;
+    --hero-stroke-width: 1px;
+    --accent-teal: 168 30% 35%;
   }
 
   .dark {
@@ -81,6 +82,7 @@
     --surface-dark: 0 0% 11.4%;
 
     --hero-stroke-color: #ffffff;
+    --hero-stroke-width: 2px;
     --accent-teal: 168 40% 50%;
   }
 }
@@ -143,8 +145,28 @@
   /* Hero outline text */
   .hero-outline-text {
     color: transparent;
-    -webkit-text-stroke: 2px var(--hero-stroke-color);
+    -webkit-text-stroke: var(--hero-stroke-width) var(--hero-stroke-color);
     transition: -webkit-text-stroke 0.7s ease-in-out;
+  }
+
+  .text-accent-teal {
+    color: hsl(var(--accent-teal));
+    transition: color 0.7s ease-in-out;
+  }
+
+  /* Hero CTA with high contrast */
+  .hero-cta-contrast {
+    @apply rounded-full px-6 py-3 text-sm font-medium tracking-wide
+           transition-all duration-300 ease-out cursor-pointer;
+    background: hsl(var(--foreground));
+    color: hsl(var(--background));
+  }
+  .hero-cta-contrast:hover {
+    opacity: 0.85;
+    transform: scale(1.02);
+  }
+  .hero-cta-contrast:active {
+    transform: scale(0.95);
   }
 
   /* Hero CTA */

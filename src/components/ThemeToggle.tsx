@@ -56,7 +56,7 @@ const ThemeToggle = () => {
           <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.5" />
           <path d="M7 1a6 6 0 0 1 0 12V1z" fill="currentColor" />
         </svg>
-        {isDark ? "Darkroom" : "Gallery"}
+        {isDark ? "Darkroom" : "Lightroom"}
       </span>
     </motion.button>
   );

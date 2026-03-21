@@ -89,7 +89,7 @@
 
 @layer base {
   * {
-    @apply border-border transition-colors duration-700 ease-in-out;
+    @apply border-border transition-colors duration-0 ease-in-out;
   }
 
   html {
@@ -97,7 +97,7 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased transition-colors duration-700 ease-in-out;
+    @apply bg-background text-foreground font-sans antialiased transition-colors duration-0 ease-in-out;
   }
 }
 
@@ -146,12 +146,12 @@
   .hero-outline-text {
     color: transparent;
     -webkit-text-stroke: var(--hero-stroke-width) var(--hero-stroke-color);
-    transition: -webkit-text-stroke 0.7s ease-in-out;
+    transition: -webkit-text-stroke 0s ease-in-out;
   }
 
   .text-accent-teal {
     color: hsl(var(--accent-teal));
-    transition: color 0.7s ease-in-out;
+    transition: color 0s ease-in-out;
   }
 
   /* Hero CTA with high contrast */

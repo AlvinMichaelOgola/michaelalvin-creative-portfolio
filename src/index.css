@@ -82,6 +82,7 @@
     --surface-dark: 0 0% 11.4%;
 
     --hero-stroke-color: #ffffff;
+    --hero-stroke-width: 2px;
     --accent-teal: 168 40% 50%;
   }
 }

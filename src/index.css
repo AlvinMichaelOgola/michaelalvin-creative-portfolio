@@ -204,7 +204,7 @@
 
   /* Hero marquee */
   .hero-marquee-track {
-    animation: marquee-scroll 30s linear infinite;
+    animation: marquee-scroll 150s linear infinite;
   }
 
   @keyframes marquee-scroll {

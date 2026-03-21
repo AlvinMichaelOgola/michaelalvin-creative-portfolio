@@ -30,8 +30,6 @@ const Hero = ({ onContactClick }: { onContactClick: () => void }) => {
 
   return (
     <section className="min-h-screen section-padding flex items-center py-24 relative overflow-hidden">
-      {/* Film grain overlay */}
-      <div className="hero-grain absolute inset-0 pointer-events-none z-10" />
 
       {/* Teal radial glow behind text */}
       <div

@@ -1,20 +1,62 @@
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
+import { useState, useRef } from "react";
 import heroPortrait from "@/assets/hero-portrait.jpg";
+import { ArrowRight } from "lucide-react";
+
+const MARQUEE_TEXT = "COMMERCIAL • PORTRAIT • ADVENTURE • FILM • ";
 
 const Hero = ({ onContactClick }: { onContactClick: () => void }) => {
+  const [isHovering, setIsHovering] = useState(false);
+  const imgRef = useRef<HTMLDivElement>(null);
+
+  const mouseX = useMotionValue(0.5);
+  const mouseY = useMotionValue(0.5);
+
+  const rotateX = useSpring(useTransform(mouseY, [0, 1], [8, -8]), { stiffness: 200, damping: 30 });
+  const rotateY = useSpring(useTransform(mouseX, [0, 1], [-8, 8]), { stiffness: 200, damping: 30 });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!imgRef.current) return;
+    const rect = imgRef.current.getBoundingClientRect();
+    mouseX.set((e.clientX - rect.left) / rect.width);
+    mouseY.set((e.clientY - rect.top) / rect.height);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovering(false);
+    mouseX.set(0.5);
+    mouseY.set(0.5);
+  };
+
   return (
-    <section className="min-h-screen section-padding flex items-center py-24">
-      <div className="w-full max-w-7xl mx-auto">
+    <section className="min-h-screen section-padding flex items-center py-24 relative overflow-hidden">
+      {/* Film grain overlay */}
+      <div className="hero-grain absolute inset-0 pointer-events-none z-10" />
+
+      {/* Teal radial glow behind text */}
+      <div
+        className="absolute pointer-events-none z-0"
+        style={{
+          top: "30%",
+          right: "10%",
+          width: "60%",
+          height: "70%",
+          background: "radial-gradient(ellipse at center, hsla(168, 40%, 40%, 0.08) 0%, transparent 70%)",
+          filter: "blur(80px)",
+        }}
+      />
+
+      <div className="w-full max-w-7xl mx-auto relative z-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Portrait and Name for mobile */}
           <div className="flex flex-col items-center w-full lg:hidden mb-8">
             <motion.div
               className="order-1"
-              initial={{ opacity: 0, scale: 0.95, filter: 'blur(8px)' }}
-              animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+              initial={{ opacity: 0, scale: 0.95, filter: "blur(8px)" }}
+              animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
               transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
             >
-              <div className="relative w-32 h-32 rounded-full overflow-hidden mx-auto">
+              <div className="relative w-32 h-32 rounded-full overflow-hidden mx-auto shadow-lg">
                 <img
                   src={heroPortrait}
                   alt="Alvin Michael — visual storyteller based in Nairobi"
@@ -24,49 +66,64 @@ const Hero = ({ onContactClick }: { onContactClick: () => void }) => {
               </div>
             </motion.div>
             <motion.h1
-              className="mt-4 text-3xl font-bold tracking-tight leading-tight text-foreground text-center"
-              initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }}
-              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              className="mt-4 text-3xl font-bold tracking-tight leading-tight text-center"
+              initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
             >
-              Alvin
+              <span className="text-foreground">Alvin</span>
               <br />
-              Michael.
+              <span className="hero-outline-text">Michael.</span>
             </motion.h1>
           </div>
 
-          {/* Portrait for desktop */}
+          {/* Portrait for desktop — 3D tilt */}
           <motion.div
+            ref={imgRef}
             className="lg:col-span-5 order-1 hidden lg:block"
+            style={{ perspective: 800 }}
+            onMouseMove={handleMouseMove}
+            onMouseEnter={() => setIsHovering(true)}
+            onMouseLeave={handleMouseLeave}
             initial={{ opacity: 0, scale: 0.95, filter: "blur(8px)" }}
             animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
             transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="relative aspect-[3/4] rounded-3xl overflow-hidden">
+            <motion.div
+              className="relative aspect-[3/4] rounded-3xl overflow-hidden transition-shadow duration-500"
+              style={{
+                rotateX,
+                rotateY,
+                boxShadow: isHovering
+                  ? "0 30px 60px -15px rgba(0,0,0,0.6)"
+                  : "0 15px 30px -10px rgba(0,0,0,0.4)",
+              }}
+            >
               <img
                 src={heroPortrait}
                 alt="Alvin Michael — visual storyteller based in Nairobi"
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent" />
-            </div>
+            </motion.div>
           </motion.div>
 
           {/* Content */}
           <div className="lg:col-span-7 order-2 flex flex-col justify-center">
             <motion.h1
-              className="hidden lg:block text-6xl md:text-8xl lg:text-9xl font-bold tracking-tight leading-[0.9] text-foreground"
+              className="hidden lg:block text-6xl md:text-8xl lg:text-9xl font-bold tracking-tight leading-[0.9]"
               initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
             >
-              Alvin
+              <span className="text-foreground">Alvin</span>
               <br />
-              Michael.
+              <span className="hero-outline-text">Michael.</span>
             </motion.h1>
 
             <motion.p
-              className="mt-6 text-sm md:text-base uppercase tracking-[0.3em] text-muted-foreground font-medium"
+              className="mt-6 text-sm md:text-base uppercase tracking-[0.3em] font-medium"
+              style={{ color: "hsl(168, 40%, 50%)" }}
               initial={{ opacity: 0, y: 16, filter: "blur(4px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={{ duration: 0.7, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
@@ -92,13 +149,26 @@ const Hero = ({ onContactClick }: { onContactClick: () => void }) => {
             >
               <button
                 onClick={onContactClick}
-                className="pill-button mt-6 md:mt-10 inline-flex items-center gap-2"
+                className="hero-cta group mt-6 md:mt-10 inline-flex items-center gap-2"
               >
-                <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: "hsl(142, 71%, 45%)" }} />
+                <span
+                  className="w-2 h-2 rounded-full animate-pulse"
+                  style={{ background: "hsl(142, 71%, 45%)" }}
+                />
                 Contact Me
+                <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
               </button>
             </motion.div>
           </div>
+        </div>
+      </div>
+
+      {/* Scrolling marquee */}
+      <div className="absolute bottom-0 left-0 right-0 z-20 overflow-hidden py-4">
+        <div className="hero-marquee whitespace-nowrap text-xs md:text-sm font-medium uppercase tracking-[0.3em] text-foreground/10">
+          <span className="inline-block hero-marquee-track">
+            {MARQUEE_TEXT.repeat(12)}
+          </span>
         </div>
       </div>
     </section>

@@ -163,7 +163,7 @@ const Gallery = () => {
   }, []);
 
   return (
-    <section className="section-padding py-32" id="gallery">
+    <section className="section-padding py-20 md:py-24" id="gallery">
       {/* Section Title */}
       <motion.div
         className="mb-12"
@@ -202,15 +202,15 @@ const Gallery = () => {
 
       {/* Masonry Grid */}
       <div className="columns-2 sm:columns-2 lg:columns-5 gap-5 space-y-5">
-        <AnimatePresence mode="popLayout">
+        <AnimatePresence mode="wait">
           {filtered.map((item, i) => (
             <motion.div
               key={item.src}
               layout
-              initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
+              initial={{ opacity: 0, y: 12, filter: "blur(2px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.5, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.28, delay: i * 0.03, ease: [0.16, 1, 0.3, 1] }}
               className="break-inside-avoid cursor-pointer group"
               onClick={() => setLightbox(item.src)}
             >

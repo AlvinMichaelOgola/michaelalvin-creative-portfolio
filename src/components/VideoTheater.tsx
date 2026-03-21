@@ -6,7 +6,7 @@ const videos = [
 
 const VideoTheater = () => {
   return (
-    <section className="py-32 overflow-hidden" id="video">
+    <section className="py-20 md:py-24 overflow-hidden" id="video">
       <div className="section-padding mb-12">
         <motion.div
           initial={{ opacity: 0, y: 16 }}

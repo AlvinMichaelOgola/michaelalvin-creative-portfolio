@@ -11,7 +11,7 @@ const gear = [
 
 const GearVault = () => {
   return (
-    <section className="section-padding py-32" id="gear">
+    <section className="section-padding py-20 md:py-24" id="gear">
       <motion.div
         className="mb-12"
         initial={{ opacity: 0, y: 16 }}
@@ -23,7 +23,7 @@ const GearVault = () => {
         <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">The Gear Vault</h2>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 max-w-4x6">
         {gear.map((item, i) => (
           <motion.div
             key={item.title}

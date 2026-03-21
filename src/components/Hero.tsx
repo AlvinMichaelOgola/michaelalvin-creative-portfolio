@@ -52,9 +52,9 @@ const Hero = ({ onContactClick }: { onContactClick: () => void }) => {
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
         >
-          <span className="text-foreground">Alvin</span>
+          <span className="text-foreground">Michael</span>
           <br />
-          <span className="hero-outline-text">Michael.</span>
+          <span className="outline-text">Alvin.</span>
         </motion.h1>
 
         {/* Portrait — 3D tilt */}

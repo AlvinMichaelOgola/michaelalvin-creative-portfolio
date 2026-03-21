@@ -206,7 +206,7 @@ const Gallery = () => {
       {/* Masonry Grid */}
       <div className="columns-2 lg:columns-5 gap-5 space-y-5 min-h-[120px]">
         {filtered.length === 0 ? (
-          <div className="w-full text-center py-12 text-lg text-muted-foreground animate-pulse">
+          <div className="w-full text-center py-12 text-base lg:text-lg text-muted-foreground animate-pulse whitespace-nowrap">
             I promise Alvin is working really hard to put something here
           </div>
         ) : (

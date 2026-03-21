@@ -43,7 +43,8 @@
     --surface-dark: 50 4% 92%;
 
     --hero-stroke-color: #111111;
-    --accent-teal: 168 40% 50%;
+    --hero-stroke-width: 1px;
+    --accent-teal: 168 30% 35%;
   }
 
   .dark {

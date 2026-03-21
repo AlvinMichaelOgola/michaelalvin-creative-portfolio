@@ -5,13 +5,16 @@ const gear = [
   { title: "Nikon D5300", subtitle: "18-55mm & 35mm", desc: "Backup & street photography" },
   { title: "Continuous Lighting", subtitle: "Aputure 300d II", desc: "Studio & video lighting kit" },
   { title: "iPhone 14", subtitle: "Versatile and handy on the go", desc: "Run-and-gun & behind the scenes" },
-  { title: "Nikon Z6III", subtitle: "Commercial Grade Video Production", desc: "Primary High Value Video Production Body" }
+  { title: "Nikon Z6III", subtitle: "Commercial Grade Video Production", desc: "Primary High Value Video Production Body" },
+  { title: "Adobe Lightroom", subtitle: "Photo Editing Software", desc: "Essential for post-production and color grading" },
+  { title: "Davinci Resolve", subtitle: "Video Editing Software", desc: "Professional video editing and color grading" },
+
 
 ];
 
 const GearVault = () => {
   return (
-    <section className="section-padding py-20 md:py-24" id="gear">
+    <section className="section-padding py-10 md:py-24" id="gear">
       <motion.div
         className="mb-12"
         initial={{ opacity: 0, y: 16 }}
@@ -23,7 +26,7 @@ const GearVault = () => {
         <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">The Gear Vault</h2>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 max-w-4x6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl lg:mr-auto lg:ml-0">
         {gear.map((item, i) => (
           <motion.div
             key={item.title}

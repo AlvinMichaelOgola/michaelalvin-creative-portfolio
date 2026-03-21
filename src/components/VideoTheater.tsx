@@ -1,12 +1,12 @@
 import { motion } from "framer-motion";
 
 const videos = [
-  { id: "-NVZB0Aay0Y?si=6wgUsHMsKBu2iNb_", title: "Orpul - A Masai Story" },
+  { id: "-NVZB0Aay0Y?si=6wgUsHMsKBu2iNb_", title: "This Is Orpul: More Than a Gathering" },
 ];
 
 const VideoTheater = () => {
   return (
-    <section className="py-20 md:py-24 overflow-hidden" id="video">
+    <section className="py-8 md:py-24 overflow-hidden" id="video">
       <div className="section-padding mb-12">
         <motion.div
           initial={{ opacity: 0, y: 16 }}

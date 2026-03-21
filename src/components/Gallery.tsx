@@ -189,11 +189,14 @@ const Gallery = () => {
           <button
             key={cat}
             onClick={() => setActive(cat)}
-            className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+            className={`px-6 py-3 rounded-full text-base font-semibold transition-all duration-300 min-w-[44px] min-h-[44px] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
               active === cat
-                ? "bg-foreground text-background"
+                ? "bg-foreground text-background shadow-md"
                 : "glass text-muted-foreground hover:text-foreground"
             }`}
+            style={{ touchAction: 'manipulation' }}
+            tabIndex={0}
+            aria-pressed={active === cat}
           >
             {cat}
           </button>
@@ -201,36 +204,42 @@ const Gallery = () => {
       </motion.div>
 
       {/* Masonry Grid */}
-      <div className="columns-2 sm:columns-2 lg:columns-5 gap-5 space-y-5">
-        <AnimatePresence mode="wait">
-          {filtered.map((item, i) => (
-            <motion.div
-              key={item.src}
-              layout
-              initial={{ opacity: 0, y: 12, filter: "blur(2px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, scale: 0.98 }}
-              transition={{ duration: 0.28, delay: i * 0.03, ease: [0.16, 1, 0.3, 1] }}
-              className="break-inside-avoid cursor-pointer group"
-              onClick={() => setLightbox(item.src)}
-            >
-              <div className="rounded-3xl overflow-hidden relative">
-                <img
-                  src={item.src}
-                  alt={item.alt}
-                  className="w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-background/0 group-hover:bg-background/20 transition-colors duration-500" />
-                <div className="absolute bottom-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                  <span className="text-xs uppercase tracking-widest text-foreground/80 font-medium">
-                    {item.category}
-                  </span>
+      <div className="columns-2 lg:columns-5 gap-5 space-y-5 min-h-[120px]">
+        {filtered.length === 0 ? (
+          <div className="w-full text-center py-12 text-lg text-muted-foreground animate-pulse">
+            I promise Alvin is working really hard to put something here
+          </div>
+        ) : (
+          <AnimatePresence mode="wait">
+            {filtered.map((item, i) => (
+              <motion.div
+                key={item.src}
+                layout
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.14, ease: 'easeInOut' }}
+                className="break-inside-avoid cursor-pointer group min-w-[44px] min-h-[44px]"
+                onClick={() => setLightbox(item.src)}
+              >
+                <div className="rounded-3xl overflow-hidden relative">
+                  <img
+                    src={item.src}
+                    alt={item.alt}
+                    className="w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-background/0 group-hover:bg-background/20 transition-colors duration-500" />
+                  <div className="absolute bottom-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    <span className="text-xs uppercase tracking-widest text-foreground/80 font-medium">
+                      {item.category}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        )}
       </div>
 
       {/* Lightbox */}

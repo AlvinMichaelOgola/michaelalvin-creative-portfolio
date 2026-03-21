@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 
 const Footer = ({ onContactClick }: { onContactClick: () => void }) => {
   return (
-    <footer className="section-padding py-40 text-center">
+    <footer className="section-padding py-10 text-center">
       <motion.h2
         className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground text-balance mx-auto max-w-3xl leading-[1.05]"
         initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
@@ -33,7 +33,7 @@ const Footer = ({ onContactClick }: { onContactClick: () => void }) => {
         viewport={{ once: true }}
         transition={{ duration: 0.6, delay: 0.4 }}
       >
-        © {new Date().getFullYear()} Alvin Michael. All rights reserved.
+        © {new Date().getFullYear()} @michaelalvin. All rights reserved.
       </motion.p>
     </footer>
   );

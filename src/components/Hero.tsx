@@ -1,5 +1,6 @@
 import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
 import { useState, useRef } from "react";
+import { useIsMobile } from "../hooks/use-mobile";
 import heroPortrait from "@/assets/hero-portrait.jpg";
 import { ArrowRight } from "lucide-react";
 
@@ -28,21 +29,24 @@ const Hero = ({ onContactClick }: { onContactClick: () => void }) => {
     mouseY.set(0.5);
   };
 
+  const isMobile = useIsMobile();
   return (
     <section id="hero" className="min-h-screen section-padding flex items-center justify-center py-24 relative overflow-hidden">
-      {/* Teal radial glow behind content */}
-      <div
-        className="absolute pointer-events-none z-0"
-        style={{
-          top: "20%",
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "60%",
-          height: "60%",
-          background: "radial-gradient(ellipse at center, hsla(168, 40%, 40%, 0.08) 0%, transparent 70%)",
-          filter: "blur(80px)",
-        }}
-      />
+      {/* Teal radial glow behind content (mobile only) */}
+      {isMobile && (
+        <div
+          className="absolute pointer-events-none z-0"
+          style={{
+            top: "20%",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "60%",
+            height: "60%",
+            background: "radial-gradient(ellipse at center, hsla(168, 40%, 40%, 0.08) 0%, transparent 70%)",
+            filter: "blur(80px)",
+          }}
+        />
+      )}
 
       <div className="w-full max-w-3xl mx-auto relative z-20 flex flex-col items-center text-center">
         {/* Name */}
@@ -84,7 +88,9 @@ const Hero = ({ onContactClick }: { onContactClick: () => void }) => {
               alt="Alvin Michael — visual storyteller based in Nairobi"
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent" />
+            {isMobile && (
+              <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent" />
+            )}
           </motion.div>
         </motion.div>
 

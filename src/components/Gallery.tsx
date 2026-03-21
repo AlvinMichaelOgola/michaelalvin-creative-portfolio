@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useIsMobile } from "../hooks/use-mobile";
 import { motion, AnimatePresence } from "framer-motion";
 
 import automotive_str1 from "@/assets/Automotive/strath_carshow/DSC_7676 (1).webp";
@@ -138,11 +139,23 @@ const items: GalleryItem[] = [
 const categories: Category[] = ["All", "Assignments",  "Creative", "Portraits", "Automotive", "Ocean", "Product", "Adventure", "A Mood"];
 
 const Gallery = () => {
+  const isMobile = useIsMobile();
   const [active, setActive] = useState<Category>("All");
   const [lightbox, setLightbox] = useState<string | null>(null);
 
-  let filtered = active === "All" ? items : items.filter((i) => i.category === active);
-  filtered = filtered.slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  let filtered = active === "All"
+    ? shuffleArray(items)
+    : items.filter((i) => i.category === active).slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+  // Fisher-Yates shuffle
+  function shuffleArray(array) {
+    const arr = array.slice();
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
 
   // Sticky logic
   const filterRef = useRef<HTMLDivElement>(null);
@@ -218,7 +231,7 @@ const Gallery = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.14, ease: 'easeInOut' }}
+                transition={{ duration: isMobile ? 0.14 : 0.1, ease: 'easeInOut' }}
                 className="break-inside-avoid cursor-pointer group min-w-[44px] min-h-[44px]"
                 onClick={() => setLightbox(item.src)}
               >
@@ -228,6 +241,8 @@ const Gallery = () => {
                     alt={item.alt}
                     className="w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                     loading="lazy"
+                    decoding="async"
+                    fetchPriority={isMobile ? undefined : "high"}
                   />
                   <div className="absolute inset-0 bg-background/0 group-hover:bg-background/20 transition-colors duration-500" />
                   <div className="absolute bottom-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">

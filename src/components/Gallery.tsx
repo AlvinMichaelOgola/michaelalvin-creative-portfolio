@@ -89,15 +89,18 @@ const items: GalleryItem[] = [
   { src: ocean_sk3, alt: "The Ocean, cinematic view", category: "Ocean", order: 3 },
   { src: ocean_sk4, alt: "The Ocean, sunset view", category: "Ocean", order: 4 },
 
-  // Automotive
+  { src: Asalka1, alt: "Asalka product shot", category: "Product", client: "Pure Pantry", tall: true, order: 1 },
+  { src: Asalka2, alt: "Asalka product shot", category: "Product", client: "Pure Pantry", tall: true, order: 2 },
+  { src: Asalka3, alt: "Asalka product shot", category: "Product", client: "Pure Pantry", order: 3 },
+
   { src: automotive_str1, alt: "Luxury sports car at dusk", category: "Automotive", order: 1 },
   { src: automotive_str2, alt: "Vintage chrome detail", category: "Automotive", tall: true, order: 2 },
   { src: automotive_str3, alt: "Classic car front view", category: "Automotive", order: 3 },
   { src: automotive_str4, alt: "Car interior detail", category: "Automotive", order: 4 },
   { src: automotive_str5, alt: "Car engine close-up", category: "Automotive", order: 5 },
   { src: automotive_str6, alt: "Car at night", category: "Automotive", tall: true, order: 6 },
-  { src: automotive_green1, alt: "Car at night", category: "Automotive", tall: true, order: 7 },
-  { src: automotive_green4, alt: "Car at night", category: "Automotive", tall: true, order: 8 },
+  { src: automotive_green1, alt: "Green VW side", category: "Automotive", client: "CargoConnect", tall: true, order: 7 },
+  { src: automotive_green4, alt: "Green VW front", category: "Automotive", client: "CargoConnect", tall: true, order: 8 },
 
   // Adventure
   { src: adventure1, alt: "Mountain cliff silhouette", category: "Adventure", order: 1 },
@@ -107,9 +110,7 @@ const items: GalleryItem[] = [
   { src: adventure5, alt: "Lone tree", category: "Adventure", tall: true, order: 5 },
   { src: adventure6, alt: "House on Hill", category: "Adventure", order: 6 },
 
-  // Product
-  { src: Asalka1, alt: "Asalka product shot", category: "Product", tall: true, order: 1 },
-  { src: Asalka2, alt: "Asalka product shot", category: "Product", tall: true, order: 2 },
+  // Product (non-client items remain)
 
   // Creative
   { src: creative_hf1, alt: "Creative Hafsah shot", category: "Creative", tall: true, order: 1 },
@@ -132,16 +133,16 @@ const items: GalleryItem[] = [
 
   // Assignments
   { src: assignment_dn_1, alt: "Dandora assignment", category: "Assignments", order: 2 },
-  { src: assignment_dn_2, alt: "Dandora assignment", category: "Assignments", order: 1 }, 
-  { src: assignment_dn_3, alt: "Dandora assignment", category: "Assignments", order: 4 },
-  { src: assignment_dn_4, alt: "Dandora assignment", category: "Assignments", order: 3 },
+  { src: assignment_dn_2, alt: "Dandora assignment", category: "Assignments", client: "Client X", order: 1 }, 
+  { src: assignment_dn_3, alt: "Dandora assignment", category: "Assignments", client: "Client X", order: 4 },
+  { src: assignment_dn_4, alt: "Dandora assignment", category: "Assignments", client: "Client X", order: 3 },
   { src: assignment_dn_5, alt: "Dandora assignment", category: "Assignments", order: 5 },
   { src: assignment_dn_6, alt: "Dandora assignment", category: "Assignments", order: 6 },
   { src: assignment_dn_7, alt: "Dandora assignment", category: "Assignments", order: 7 },
   { src: assignment_dn_8, alt: "Dandora assignment", category: "Assignments", order: 8 },
 ];
 
-const categories: Category[] = ["All", "Assignments",  "Creative", "Portraits", "Automotive", "Ocean", "Product", "Adventure", "A Mood"];
+const categories: Category[] = ["All", "Clients", "Assignments", "Creative", "Portraits", "Automotive", "Ocean", "Product", "Adventure", "A Mood"];
 
 const Gallery = () => {
   const isMobile = useIsMobile();

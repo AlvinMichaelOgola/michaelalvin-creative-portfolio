@@ -66,12 +66,17 @@ import assignment_dn_8 from "@/assets/Assignments/dandora/DSC_8214.webp";
 
 
 
-type Category = "All" | "Ocean" | "Portraits" | "Automotive" | "Adventure" | "Creative" | "Product" | "A Mood" | "Assignments";
+type Category = "All" | "Ocean" | "Portraits" | "Automotive" | "Adventure" | "Creative" | "Product" | "A Mood" | "Assignments" | "Clients";
+
+type ClientName = "All Clients" | "Pure Pantry" | "CargoConnect" | "Client X";
+
+const clientNames: ClientName[] = ["All Clients", "Pure Pantry", "CargoConnect", "Client X"];
 
 interface GalleryItem {
   src: string;
   alt: string;
-  category: Exclude<Category, "All">;
+  category: Exclude<Category, "All" | "Clients">;
+  client?: ClientName;
   order?: number;
   tall?: boolean;
   width?: boolean;

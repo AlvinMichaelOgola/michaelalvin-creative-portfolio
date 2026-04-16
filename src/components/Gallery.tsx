@@ -67,16 +67,12 @@ import assignment_dn_8 from "@/assets/Assignments/dandora/DSC_8214.webp";
 
 
 type Category = "All" | "Ocean" | "Portraits" | "Automotive" | "Adventure" | "Creative" | "Product" | "A Mood" | "Assignments" | "Clients";
-
 type ClientName = "All Clients" | "Pure Pantry" | "CargoConnect" | "Client X";
-
-const clientNames: ClientName[] = ["All Clients", "Pure Pantry", "CargoConnect", "Client X"];
 
 interface GalleryItem {
   src: string;
   alt: string;
-  category: Exclude<Category, "All" | "Clients">;
-  client?: ClientName;
+  category: Exclude<Category, "All" | "Clients">; 
   order?: number;
   tall?: boolean;
   width?: boolean;
@@ -99,8 +95,8 @@ const items: GalleryItem[] = [
   { src: automotive_str4, alt: "Car interior detail", category: "Automotive", order: 4 },
   { src: automotive_str5, alt: "Car engine close-up", category: "Automotive", order: 5 },
   { src: automotive_str6, alt: "Car at night", category: "Automotive", tall: true, order: 6 },
-  { src: automotive_green1, alt: "Green VW side", category: "Automotive", client: "CargoConnect", tall: true, order: 7 },
-  { src: automotive_green4, alt: "Green VW front", category: "Automotive", client: "CargoConnect", tall: true, order: 8 },
+  // { src: automotive_green1, alt: "Green VW side", category: "Automotive", client: "CargoConnect", tall: true, order: 7 },
+  // { src: automotive_green4, alt: "Green VW front", category: "Automotive", client: "CargoConnect", tall: true, order: 8 },
 
   // Adventure
   { src: adventure1, alt: "Mountain cliff silhouette", category: "Adventure", order: 1 },
@@ -133,36 +129,29 @@ const items: GalleryItem[] = [
 
   // Assignments
   { src: assignment_dn_1, alt: "Dandora assignment", category: "Assignments", order: 2 },
-  { src: assignment_dn_2, alt: "Dandora assignment", category: "Assignments", client: "Client X", order: 1 }, 
-  { src: assignment_dn_3, alt: "Dandora assignment", category: "Assignments", client: "Client X", order: 4 },
-  { src: assignment_dn_4, alt: "Dandora assignment", category: "Assignments", client: "Client X", order: 3 },
+  // { src: assignment_dn_2, alt: "Dandora assignment", category: "Assignments", client: "Client X", order: 1 }, 
+  // { src: assignment_dn_3, alt: "Dandora assignment", category: "Assignments", client: "Client X", order: 4 },
+  // { src: assignment_dn_4, alt: "Dandora assignment", category: "Assignments", client: "Client X", order: 3 },
   { src: assignment_dn_5, alt: "Dandora assignment", category: "Assignments", order: 5 },
   { src: assignment_dn_6, alt: "Dandora assignment", category: "Assignments", order: 6 },
   { src: assignment_dn_7, alt: "Dandora assignment", category: "Assignments", order: 7 },
   { src: assignment_dn_8, alt: "Dandora assignment", category: "Assignments", order: 8 },
 ];
 
-const categories: Category[] = ["All", "Clients", "Assignments", "Creative", "Portraits", "Automotive", "Ocean", "Product", "Adventure", "A Mood"];
+const categories: Category[] = ["All", "Assignments", "Creative", "Portraits", "Automotive", "Ocean", "Product", "Adventure", "A Mood"];
 
 const Gallery = () => {
   const isMobile = useIsMobile();
   const [active, setActive] = useState<Category>("All");
-  const [activeClient, setActiveClient] = useState<ClientName>("All Clients");
   const [lightbox, setLightbox] = useState<string | null>(null);
 
   const handleCategoryChange = (cat: Category) => {
     setActive(cat);
-    if (cat !== "Clients") setActiveClient("All Clients");
   };
 
   let filtered: GalleryItem[];
   if (active === "All") {
     filtered = shuffleArray(items);
-  } else if (active === "Clients") {
-    const clientItems = items.filter((i) => i.client);
-    filtered = activeClient === "All Clients"
-      ? clientItems.slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-      : clientItems.filter((i) => i.client === activeClient).slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   } else {
     filtered = items.filter((i) => i.category === active).slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   }
@@ -237,36 +226,6 @@ const Gallery = () => {
           ))}
         </div>
 
-        {/* Secondary Client Sub-Filter */}
-        <AnimatePresence>
-          {active === "Clients" && (
-            <motion.div
-              className="flex flex-wrap gap-2 pt-3"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              style={{ overflow: "hidden" }}
-            >
-              {clientNames.map((client) => (
-                <button
-                  key={client}
-                  onClick={() => setActiveClient(client)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 min-w-[40px] min-h-[40px] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
-                    activeClient === client
-                      ? "bg-foreground text-background shadow-sm"
-                      : "backdrop-blur-[20px] bg-foreground/5 border border-foreground/10 text-muted-foreground hover:text-foreground"
-                  }`}
-                  style={{ touchAction: 'manipulation' }}
-                  tabIndex={0}
-                  aria-pressed={activeClient === client}
-                >
-                  {client}
-                </button>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
       </motion.div>
 
       {/* Masonry Grid */}

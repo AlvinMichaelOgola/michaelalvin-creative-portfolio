@@ -147,11 +147,25 @@ const categories: Category[] = ["All", "Clients", "Assignments", "Creative", "Po
 const Gallery = () => {
   const isMobile = useIsMobile();
   const [active, setActive] = useState<Category>("All");
+  const [activeClient, setActiveClient] = useState<ClientName>("All Clients");
   const [lightbox, setLightbox] = useState<string | null>(null);
 
-  let filtered = active === "All"
-    ? shuffleArray(items)
-    : items.filter((i) => i.category === active).slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  const handleCategoryChange = (cat: Category) => {
+    setActive(cat);
+    if (cat !== "Clients") setActiveClient("All Clients");
+  };
+
+  let filtered: GalleryItem[];
+  if (active === "All") {
+    filtered = shuffleArray(items);
+  } else if (active === "Clients") {
+    const clientItems = items.filter((i) => i.client);
+    filtered = activeClient === "All Clients"
+      ? clientItems.slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+      : clientItems.filter((i) => i.client === activeClient).slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  } else {
+    filtered = items.filter((i) => i.category === active).slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  }
 
   // Fisher-Yates shuffle
   function shuffleArray(array) {

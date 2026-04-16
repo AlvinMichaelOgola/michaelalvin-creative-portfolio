@@ -212,28 +212,61 @@ const Gallery = () => {
       {/* Filter Pills */}
       <motion.div
         ref={filterRef}
-        className={`flex flex-wrap gap-2 mb-12 z-30 bg-background/80 backdrop-blur sticky top-0 transition-opacity duration-300 ${hideFilter ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+        className={`flex flex-col gap-0 mb-12 z-30 bg-background/80 backdrop-blur sticky top-0 py-3 transition-opacity duration-300 ${hideFilter ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
         initial={{ opacity: 0, y: 12 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
       >
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setActive(cat)}
-            className={`px-6 py-3 rounded-full text-base font-semibold transition-all duration-300 min-w-[44px] min-h-[44px] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
-              active === cat
-                ? "bg-foreground text-background shadow-md"
-                : "glass text-muted-foreground hover:text-foreground"
-            }`}
-            style={{ touchAction: 'manipulation' }}
-            tabIndex={0}
-            aria-pressed={active === cat}
-          >
-            {cat}
-          </button>
-        ))}
+        <div className="flex flex-wrap gap-2">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => handleCategoryChange(cat)}
+              className={`px-6 py-3 rounded-full text-base font-semibold transition-all duration-300 min-w-[44px] min-h-[44px] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                active === cat
+                  ? "bg-foreground text-background shadow-md"
+                  : "glass text-muted-foreground hover:text-foreground"
+              }`}
+              style={{ touchAction: 'manipulation' }}
+              tabIndex={0}
+              aria-pressed={active === cat}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        {/* Secondary Client Sub-Filter */}
+        <AnimatePresence>
+          {active === "Clients" && (
+            <motion.div
+              className="flex flex-wrap gap-2 pt-3"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              style={{ overflow: "hidden" }}
+            >
+              {clientNames.map((client) => (
+                <button
+                  key={client}
+                  onClick={() => setActiveClient(client)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 min-w-[40px] min-h-[40px] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                    activeClient === client
+                      ? "bg-foreground text-background shadow-sm"
+                      : "backdrop-blur-[20px] bg-foreground/5 border border-foreground/10 text-muted-foreground hover:text-foreground"
+                  }`}
+                  style={{ touchAction: 'manipulation' }}
+                  tabIndex={0}
+                  aria-pressed={activeClient === client}
+                >
+                  {client}
+                </button>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
 
       {/* Masonry Grid */}

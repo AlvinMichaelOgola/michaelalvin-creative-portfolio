@@ -22,15 +22,15 @@ const GearVault = () => {
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       >
-        <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-2">Equipment</p>
-        <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">The Gear Vault</h2>
+          <p className="section-title-pill mb-3 text-muted-foreground">Equipment</p>
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">The Gear Vault</h2>
       </motion.div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl lg:mr-auto lg:ml-0">
         {gear.map((item, i) => (
           <motion.div
             key={item.title}
-            className="surface-card rounded-3xl p-8 group transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_0_0_1px_hsla(0,0%,100%,0.1)]"
+            className="glass-panel p-8 group transition-all duration-500 hover:scale-[1.02]"
             initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
             whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             viewport={{ once: true, amount: 0.3 }}

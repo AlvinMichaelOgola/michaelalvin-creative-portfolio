@@ -109,6 +109,20 @@
     -webkit-backdrop-filter: blur(var(--glass-blur));
   }
 
+  .glass-panel {
+    @apply glass rounded-[2rem];
+    box-shadow:
+      0 24px 60px -32px hsla(0 0% 0% / 0.55),
+      inset 0 1px 0 hsla(0 0% 100% / 0.25);
+  }
+
+  .glass-frame {
+    border: 1px solid hsla(var(--glass-border));
+    box-shadow:
+      0 20px 50px -30px hsla(0 0% 0% / 0.55),
+      inset 0 1px 0 hsla(0 0% 100% / 0.25);
+  }
+
   .glass-strong {
     background: hsla(0 0% 0% / 0.7);
     border: 1px solid hsla(0 0% 100% / 0.1);
@@ -167,6 +181,14 @@
   }
   .hero-cta-contrast:active {
     transform: scale(0.95);
+  }
+
+  .section-title-pill {
+    @apply inline-flex items-center rounded-full px-4 py-1.5 text-xs uppercase tracking-[0.3em];
+    background: hsla(var(--glass-bg));
+    border: 1px solid hsla(var(--glass-border));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
   }
 
   /* Hero CTA */

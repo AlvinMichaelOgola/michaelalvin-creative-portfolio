@@ -9,19 +9,12 @@ import automotive_str4 from "@/assets/Automotive/strath_carshow/DSC_7731.webp";
 import automotive_str5 from "@/assets/Automotive/strath_carshow/DSC_7752.webp";
 import automotive_str6 from "@/assets/Automotive/strath_carshow/DSC_7778.webp";
 
-import automotive_green1 from "@/assets/Automotive/green_vw/WhatsApp Image 2026-03-20 at 18.15.59 (1).webp";
-import automotive_green2 from "@/assets/Automotive/green_vw/WhatsApp Image 2026-03-20 at 18.15.59 (2).webp";
-import automotive_green3 from "@/assets/Automotive/green_vw/WhatsApp Image 2026-03-20 at 18.15.59 (3).webp";
-import automotive_green4 from "@/assets/Automotive/green_vw/WhatsApp Image 2026-03-20 at 18.15.59.webp";
-
 import adventure1 from "@/assets/Adventure_photos/A7309381.jpg";
 import adventure2 from "@/assets/Adventure_photos/A7309388.jpg";
 import adventure3 from "@/assets/Adventure_photos/A7309402.jpg";
 import adventure4 from "@/assets/Adventure_photos/A7309437.jpg";
 import adventure5 from "@/assets/Adventure_photos/A7309466.jpg";
 import adventure6 from "@/assets/Adventure_photos/A7309543.jpg";
-
-import creative1 from "@/assets/gallery-creative-1.jpg";
 
 import Asalka1 from "@/assets/Product_photos/Asalka 1.jpg";
 import Asalka2 from "@/assets/Product_photos/Asalka 2.jpg";
@@ -46,36 +39,27 @@ import creative_hf1 from "@/assets/creative/hafsah/hafsah1.webp";
 import creative_hf2 from "@/assets/creative/hafsah/hafsah2.webp";
 import creative_hf3 from "@/assets/creative/hafsah/hafsah5.webp";
 
-import creative_gl1 from "@/assets/creative/glovis/DSC_6894.webp";
 import creative_gl2 from "@/assets/creative/glovis/DSC_6896.webp";
 import creative_gl3 from "@/assets/creative/glovis/DSC_6899.webp";
 import creative_gl4 from "@/assets/creative/glovis/DSC_6901 (1).webp";
 import creative_gl5 from "@/assets/creative/glovis/DSC_6908.webp";
 
 import assignment_dn_1 from "@/assets/Assignments/dandora/DSC_8129.webp";
-import assignment_dn_2 from "@/assets/Assignments/dandora/DSC_8131.webp";
-import assignment_dn_3 from "@/assets/Assignments/dandora/DSC_8136.webp";
-import assignment_dn_4 from "@/assets/Assignments/dandora/DSC_8174.webp";
 import assignment_dn_5 from "@/assets/Assignments/dandora/DSC_8178.webp";
 import assignment_dn_6 from "@/assets/Assignments/dandora/DSC_8188.webp";
 import assignment_dn_7 from "@/assets/Assignments/dandora/DSC_8200.webp";
 import assignment_dn_8 from "@/assets/Assignments/dandora/DSC_8214.webp";
 
-
-
-
-
-
 type Category = "All" | "Ocean" | "Portraits" | "Automotive" | "Adventure" | "Creative" | "Product" | "A Mood" | "Assignments" | "Clients";
-type ClientName = "All Clients" | "Pure Pantry" | "CargoConnect" | "Client X";
+type ClientName = "Pure Pantry" | "CargoConnect" | "Client X";
 
 interface GalleryItem {
   src: string;
   alt: string;
-  category: Exclude<Category, "All" | "Clients">; 
+  category: Exclude<Category, "All" | "Clients">;
+  client?: ClientName;
   order?: number;
   tall?: boolean;
-  width?: boolean;
 }
 
 const items: GalleryItem[] = [
@@ -95,9 +79,6 @@ const items: GalleryItem[] = [
   { src: automotive_str4, alt: "Car interior detail", category: "Automotive", order: 4 },
   { src: automotive_str5, alt: "Car engine close-up", category: "Automotive", order: 5 },
   { src: automotive_str6, alt: "Car at night", category: "Automotive", tall: true, order: 6 },
-  // { src: automotive_green1, alt: "Green VW side", category: "Automotive", client: "CargoConnect", tall: true, order: 7 },
-  // { src: automotive_green4, alt: "Green VW front", category: "Automotive", client: "CargoConnect", tall: true, order: 8 },
-
   // Adventure
   { src: adventure1, alt: "Mountain cliff silhouette", category: "Adventure", order: 1 },
   { src: adventure2, alt: "Hills", category: "Adventure", order: 2 },
@@ -129,9 +110,6 @@ const items: GalleryItem[] = [
 
   // Assignments
   { src: assignment_dn_1, alt: "Dandora assignment", category: "Assignments", order: 2 },
-  // { src: assignment_dn_2, alt: "Dandora assignment", category: "Assignments", client: "Client X", order: 1 }, 
-  // { src: assignment_dn_3, alt: "Dandora assignment", category: "Assignments", client: "Client X", order: 4 },
-  // { src: assignment_dn_4, alt: "Dandora assignment", category: "Assignments", client: "Client X", order: 3 },
   { src: assignment_dn_5, alt: "Dandora assignment", category: "Assignments", order: 5 },
   { src: assignment_dn_6, alt: "Dandora assignment", category: "Assignments", order: 6 },
   { src: assignment_dn_7, alt: "Dandora assignment", category: "Assignments", order: 7 },
@@ -157,7 +135,7 @@ const Gallery = () => {
   }
 
   // Fisher-Yates shuffle
-  function shuffleArray(array) {
+  function shuffleArray(array: GalleryItem[]) {
     const arr = array.slice();
     for (let i = arr.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -194,14 +172,14 @@ const Gallery = () => {
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       >
-        <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-2">Selected Work</p>
-        <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">The Gallery</h2>
-      </motion.div>
+          <p className="section-title-pill mb-3 text-muted-foreground">Selected Work</p>
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">The Gallery</h2>
+        </motion.div>
 
       {/* Filter Pills */}
       <motion.div
         ref={filterRef}
-        className={`flex flex-col gap-0 mb-12 z-30 bg-background/80 backdrop-blur sticky top-0 py-3 transition-opacity duration-300 ${hideFilter ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+        className={`flex flex-col gap-0 mb-12 z-30 glass-panel sticky top-3 py-3 px-3 transition-opacity duration-300 ${hideFilter ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
         initial={{ opacity: 0, y: 12 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.3 }}
@@ -247,7 +225,7 @@ const Gallery = () => {
                 className="break-inside-avoid cursor-pointer group min-w-[44px] min-h-[44px]"
                 onClick={() => setLightbox(item.src)}
               >
-                <div className="rounded-3xl overflow-hidden relative">
+                <div className="rounded-3xl overflow-hidden relative glass-frame">
                   <img
                     src={item.src}
                     alt={item.alt}

@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mail, Instagram, Calendar } from "lucide-react";
+import { X, Mail, Globe, Calendar } from "lucide-react";
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -50,7 +50,7 @@ const ContactModal = ({ isOpen, onClose }: ContactModalProps) => {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl">
               <a
                 href="mailto:michaelalvin.media@gmail.com"
-                className="surface-card rounded-3xl p-6 flex flex-col items-center text-center gap-3 group transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_0_1px_hsla(0,0%,100%,0.1)]"
+                className="glass-panel rounded-3xl p-6 flex flex-col items-center text-center gap-3 group transition-all duration-300 hover:scale-[1.02]"
               >
                 <Mail size={24} className="text-muted-foreground group-hover:text-foreground transition-colors" />
                 <span className="text-sm font-medium text-foreground">Email</span>
@@ -61,16 +61,16 @@ const ContactModal = ({ isOpen, onClose }: ContactModalProps) => {
                 href="https://instagram.com/_michaelalvin_"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="surface-card rounded-3xl p-6 flex flex-col items-center text-center gap-3 group transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_0_1px_hsla(0,0%,100%,0.1)]"
+                className="glass-panel rounded-3xl p-6 flex flex-col items-center text-center gap-3 group transition-all duration-300 hover:scale-[1.02]"
               >
-                <Instagram size={24} className="text-muted-foreground group-hover:text-foreground transition-colors" />
+                <Globe size={24} className="text-muted-foreground group-hover:text-foreground transition-colors" />
                 <span className="text-sm font-medium text-foreground">Instagram</span>
                 <span className="text-xs text-muted-foreground">@_michaelalvin_</span>
               </a>
 
               <a
                 href="#"
-                className="surface-card rounded-3xl p-6 flex flex-col items-center text-center gap-3 group transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_0_1px_hsla(0,0%,100%,0.1)]"
+                className="glass-panel rounded-3xl p-6 flex flex-col items-center text-center gap-3 group transition-all duration-300 hover:scale-[1.02]"
               >
                 <Calendar size={24} className="text-muted-foreground group-hover:text-foreground transition-colors" />
                 <span className="text-sm font-medium text-foreground">Book a Call</span>

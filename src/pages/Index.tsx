@@ -23,6 +23,11 @@ const Index = () => {
 
   return (
     <div className="bg-background text-foreground min-h-screen overflow-x-hidden relative">
+      <div className="pointer-events-none absolute inset-0 -z-0 overflow-hidden">
+        <div className="absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-foreground/10 blur-3xl" />
+        <div className="absolute top-[35%] -left-24 h-64 w-64 rounded-full bg-foreground/5 blur-3xl" />
+        <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-foreground/10 blur-3xl" />
+      </div>
       <ThemeToggle />
       <Hero onContactClick={() => setContactOpen(true)} />
       <Gallery />

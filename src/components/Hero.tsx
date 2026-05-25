@@ -31,7 +31,10 @@ const Hero = ({ onContactClick }: { onContactClick: () => void }) => {
 
   const isMobile = useIsMobile();
   return (
-    <section id="hero" className="min-h-screen section-padding flex items-center justify-center py-24 relative overflow-hidden">
+    <section
+      id="hero"
+      className="h-[100svh] min-h-[100svh] md:h-screen section-padding flex items-center justify-center relative overflow-hidden pt-4 pb-16 md:pt-6 md:pb-16"
+    >
       {/* Teal radial glow behind content (mobile only) */}
       {isMobile && (
         <div
@@ -48,23 +51,21 @@ const Hero = ({ onContactClick }: { onContactClick: () => void }) => {
         />
       )}
 
-      <div className="w-full max-w-3xl mx-auto relative z-20 flex flex-col items-center text-center">
+      <div className="w-full max-w-3xl mx-auto relative z-20 flex max-h-full flex-col items-center overflow-hidden text-center glass-panel px-5 py-6 md:px-8 md:py-8">
         {/* Name */}
         <motion.h1
-          className="text-5xl md:text-7xl lg:text-9xl font-bold tracking-tight leading-[0.9]"
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[0.9]"
           initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
         >
-          <span className="text-foreground">Michael</span>
-          <br />
-          <span className="outline-text">Alvin.</span>
+          <span className="text-foreground whitespace-nowrap">Michael Alvin.</span>
         </motion.h1>
 
         {/* Portrait — 3D tilt */}
         <motion.div
           ref={imgRef}
-          className="mt-10 w-full max-w-md"
+          className="mt-4 md:mt-6 w-full max-w-[min(68vw,16rem)] md:max-w-[16rem] lg:max-w-[18rem]"
           style={{ perspective: 800 }}
           onMouseMove={handleMouseMove}
           onMouseEnter={() => setIsHovering(true)}
@@ -74,7 +75,7 @@ const Hero = ({ onContactClick }: { onContactClick: () => void }) => {
           transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
         >
           <motion.div
-            className="relative aspect-[3/4] rounded-3xl overflow-hidden transition-shadow duration-500"
+            className="relative rounded-3xl overflow-hidden transition-shadow duration-500 glass-frame"
             style={{
               rotateX,
               rotateY,
@@ -86,7 +87,7 @@ const Hero = ({ onContactClick }: { onContactClick: () => void }) => {
             <img
               src={heroPortrait}
               alt="Alvin Michael — visual storyteller based in Nairobi"
-              className="w-full h-full object-cover"
+              className="block w-full h-auto"
             />
             {isMobile && (
               <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent" />
@@ -96,7 +97,7 @@ const Hero = ({ onContactClick }: { onContactClick: () => void }) => {
 
         {/* Subtitle */}
         <motion.p
-          className="mt-8 text-sm md:text-base uppercase tracking-[0.3em] font-medium text-accent-teal"
+          className="mt-4 md:mt-5 text-[11px] md:text-sm uppercase tracking-[0.3em] font-medium text-accent-teal"
           initial={{ opacity: 0, y: 16, filter: "blur(4px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ duration: 0.7, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -106,7 +107,7 @@ const Hero = ({ onContactClick }: { onContactClick: () => void }) => {
 
         {/* Body */}
         <motion.p
-          className="mt-6 text-base md:text-lg text-muted-foreground leading-relaxed max-w-lg"
+          className="mt-3 md:mt-4 text-sm md:text-base text-muted-foreground leading-relaxed max-w-md"
           initial={{ opacity: 0, y: 16, filter: "blur(4px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ duration: 0.7, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
@@ -124,7 +125,7 @@ const Hero = ({ onContactClick }: { onContactClick: () => void }) => {
         >
           <button
             onClick={onContactClick}
-            className="hero-cta-contrast group mt-8 inline-flex items-center gap-2"
+            className="hero-cta-contrast group mt-5 md:mt-6 inline-flex items-center gap-2"
           >
             <span
               className="w-2 h-2 rounded-full animate-pulse"
@@ -137,7 +138,7 @@ const Hero = ({ onContactClick }: { onContactClick: () => void }) => {
       </div>
 
       {/* Scrolling marquee */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 overflow-hidden py-4">
+      <div className="absolute bottom-0 left-0 right-0 z-20 overflow-hidden py-3">
         <div className="hero-marquee whitespace-nowrap text-xs md:text-sm font-medium uppercase tracking-[0.3em] text-foreground/10">
           <span className="inline-block hero-marquee-track">
             {MARQUEE_TEXT.repeat(12)}

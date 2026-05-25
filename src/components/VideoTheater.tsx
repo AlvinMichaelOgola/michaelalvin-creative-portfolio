@@ -14,7 +14,7 @@ const VideoTheater = () => {
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
-          <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-2">Motion</p>
+          <p className="section-title-pill mb-3 text-muted-foreground">Motion</p>
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">Video Theater</h2>
         </motion.div>
       </div>
@@ -30,7 +30,7 @@ const VideoTheater = () => {
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.6, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="rounded-3xl overflow-hidden surface-card">
+            <div className="rounded-3xl overflow-hidden glass-panel">
               <div className="aspect-video">
                 <iframe
                   src={`https://www.youtube.com/embed/${video.id}`}

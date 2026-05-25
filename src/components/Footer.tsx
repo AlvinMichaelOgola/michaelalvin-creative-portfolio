@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 const Footer = ({ onContactClick }: { onContactClick: () => void }) => {
   return (
     <footer className="section-padding py-10 text-center">
+      <div className="glass-panel px-6 py-10 md:px-12">
       <motion.h2
         className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground text-balance mx-auto max-w-3xl leading-[1.05]"
         initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
@@ -35,6 +36,7 @@ const Footer = ({ onContactClick }: { onContactClick: () => void }) => {
       >
         © {new Date().getFullYear()} @michaelalvin. All rights reserved.
       </motion.p>
+      </div>
     </footer>
   );
 };

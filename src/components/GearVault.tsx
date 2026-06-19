@@ -1,46 +1,32 @@
-import { motion } from "framer-motion";
+import type { GearContentItem } from "@/lib/cms-content";
 
-const gear = [
-  { title: "Sony a7iii", subtitle: "85mm f/1.8, 50mm F1.8 and 24-70mm F2.8", desc: "Primary body for portraits, video & commercial work" },
-  { title: "Nikon D5300", subtitle: "18-55mm & 35mm", desc: "Backup & street photography" },
-  { title: "Continuous Lighting", subtitle: "Aputure 300d II", desc: "Studio & video lighting kit" },
-  { title: "iPhone 14", subtitle: "Versatile and handy on the go", desc: "Run-and-gun & behind the scenes" },
-  { title: "Nikon Z6III", subtitle: "Commercial Grade Video Production", desc: "Primary High Value Video Production Body" },
-  { title: "Adobe Lightroom", subtitle: "Photo Editing Software", desc: "Essential for post-production and color grading" },
-  { title: "Davinci Resolve", subtitle: "Video Editing Software", desc: "Professional video editing and color grading" },
+const GearVault = ({ gear }: { gear?: GearContentItem[] }) => {
+  const sourceGear = gear ?? [];
 
-
-];
-
-const GearVault = () => {
   return (
     <section className="section-padding py-10 md:py-24" id="gear">
-      <motion.div
-        className="mb-12"
-        initial={{ opacity: 0, y: 16 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.3 }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      >
+      <div className="mb-12">
           <p className="section-title-pill mb-3 text-muted-foreground">Equipment</p>
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">The Gear Vault</h2>
-      </motion.div>
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl lg:mr-auto lg:ml-0">
-        {gear.map((item, i) => (
-          <motion.div
-            key={item.title}
-            className="glass-panel p-8 group transition-all duration-500 hover:scale-[1.02]"
-            initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
-            whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.5, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <h3 className="text-xl font-bold text-foreground tracking-tight">{item.title}</h3>
-            <p className="text-sm text-muted-foreground mt-1 font-medium">{item.subtitle}</p>
-            <p className="text-sm text-muted-foreground/60 mt-4 leading-relaxed">{item.desc}</p>
-          </motion.div>
-        ))}
+        {sourceGear.length === 0 ? (
+          <p className="text-muted-foreground text-sm md:text-base col-span-full">
+            No published gear items yet.
+          </p>
+        ) : (
+          sourceGear.map((item) => (
+            <div
+              key={item.title}
+              className="glass-panel p-8 group transition-all duration-500 hover:scale-[1.02]"
+            >
+              <h3 className="text-xl font-bold text-foreground tracking-tight">{item.title}</h3>
+              <p className="text-sm text-muted-foreground mt-1 font-medium">{item.subtitle}</p>
+              <p className="text-sm text-muted-foreground/60 mt-4 leading-relaxed">{item.desc}</p>
+            </div>
+          ))
+        )}
       </div>
     </section>
   );

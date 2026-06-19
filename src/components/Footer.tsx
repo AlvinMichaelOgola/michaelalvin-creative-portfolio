@@ -1,41 +1,49 @@
-import { motion } from "framer-motion";
+import type { FooterContent } from "@/lib/cms-content";
 
-const Footer = ({ onContactClick }: { onContactClick: () => void }) => {
+const Footer = ({
+  onContactClick,
+  content,
+}: {
+  onContactClick: () => void;
+  content?: FooterContent | null;
+}) => {
+  if (!content) {
+    return null;
+  }
+
+  const footerContent = content;
+  if (!footerContent.heading && !footerContent.ctaText && !footerContent.copyright) {
+    return null;
+  }
+  const headingLines = footerContent.heading
+    .split("\n")
+    .filter((line) => line.trim().length > 0);
+
   return (
     <footer className="section-padding py-10 text-center">
-      <div className="glass-panel px-6 py-10 md:px-12">
-      <motion.h2
-        className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground text-balance mx-auto max-w-3xl leading-[1.05]"
-        initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
-        whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-        viewport={{ once: true, amount: 0.3 }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      <div className="glass-panel px-5 py-10 md:px-12">
+      <h2
+        className="text-3xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground text-balance mx-auto max-w-3xl leading-[1.05]"
       >
-        Ready to Tell
-        <br />
-        Your Story?
-      </motion.h2>
+        {headingLines.map((line, index) => (
+          <span key={`${line}-${index}`}>
+            {line}
+            {index < headingLines.length - 1 ? <br /> : null}
+          </span>
+        ))}
+      </h2>
 
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.3 }}
-        transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-      >
-        <button onClick={onContactClick} className="pill-button mt-10 text-base">
-          Let's Create Together
-        </button>
-      </motion.div>
+      <div>
+        {footerContent.ctaText ? (
+          <button onClick={onContactClick} className="pill-button mt-10 w-full sm:w-auto text-base">
+            {footerContent.ctaText}
+          </button>
+        ) : null}
+      </div>
 
-      <motion.p
-        className="mt-24 text-xs text-muted-foreground/40 tracking-widest uppercase"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6, delay: 0.4 }}
-      >
-        © {new Date().getFullYear()} @michaelalvin. All rights reserved.
-      </motion.p>
+      <p className="mt-16 md:mt-24 text-xs text-muted-foreground/40 tracking-widest uppercase">
+        {footerContent.copyright}
+      </p>
       </div>
     </footer>
   );

@@ -8,7 +8,7 @@ type GalleryItem = GalleryContentItem & {
 
 function buildSrcSet(
   variants: NonNullable<GalleryItem["image"]>["variants"] | undefined,
-  format: "avif" | "webp" | "jpeg",
+  format: "webp",
 ) {
   const items = (variants ?? [])
     .filter((variant) => variant.format === format)
@@ -185,24 +185,10 @@ const Gallery = ({
                   <picture>
                     {item.image ? (
                       <>
-                        {buildSrcSet(item.image.variants, "avif") ? (
-                          <source
-                            type="image/avif"
-                            srcSet={buildSrcSet(item.image.variants, "avif")}
-                            sizes={item.image.sizes}
-                          />
-                        ) : null}
                         {buildSrcSet(item.image.variants, "webp") ? (
                           <source
                             type="image/webp"
                             srcSet={buildSrcSet(item.image.variants, "webp")}
-                            sizes={item.image.sizes}
-                          />
-                        ) : null}
-                        {buildSrcSet(item.image.variants, "jpeg") ? (
-                          <source
-                            type="image/jpeg"
-                            srcSet={buildSrcSet(item.image.variants, "jpeg")}
                             sizes={item.image.sizes}
                           />
                         ) : null}

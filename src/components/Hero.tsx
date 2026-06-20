@@ -6,7 +6,7 @@ const MARQUEE_TEXT = "COMMERCIAL • PORTRAIT • ADVENTURE • FILM • ";
 
 function buildSrcSet(
   variants: HeroContent["portraitImage"] extends { variants: infer V } ? V : never,
-  format: "avif" | "webp" | "jpeg",
+  format: "webp",
 ) {
   const items = (variants ?? [])
     .filter((variant) => variant.format === format)
@@ -71,24 +71,10 @@ const Hero = ({
               <picture>
                 {content.portraitImage ? (
                   <>
-                    {buildSrcSet(content.portraitImage.variants, "avif") ? (
-                      <source
-                        type="image/avif"
-                        srcSet={buildSrcSet(content.portraitImage.variants, "avif")}
-                        sizes={content.portraitImage.sizes}
-                      />
-                    ) : null}
                     {buildSrcSet(content.portraitImage.variants, "webp") ? (
                       <source
                         type="image/webp"
                         srcSet={buildSrcSet(content.portraitImage.variants, "webp")}
-                        sizes={content.portraitImage.sizes}
-                      />
-                    ) : null}
-                    {buildSrcSet(content.portraitImage.variants, "jpeg") ? (
-                      <source
-                        type="image/jpeg"
-                        srcSet={buildSrcSet(content.portraitImage.variants, "jpeg")}
                         sizes={content.portraitImage.sizes}
                       />
                     ) : null}

@@ -37,6 +37,12 @@ Edge Function path:
 
 - `supabase/functions/compress-image/index.ts`
 
+Compression profile:
+
+- Converts gallery uploads to **WebP**
+- Enforces max longest edge of **2400px**
+- Targets final file size of **<= 100KB**
+
 Deploy command:
 
 ```bash
@@ -86,3 +92,5 @@ supabase db push
 Migration file:
 
 - `supabase/migrations/20260620_add_image_delivery_settings.sql`
+- `supabase/migrations/20260620184100_add_gallery_original_size_bytes.sql`
+- `supabase/migrations/20260620191500_update_image_delivery_profile.sql`

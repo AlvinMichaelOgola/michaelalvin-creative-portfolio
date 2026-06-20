@@ -3,7 +3,7 @@ import {
   getSupabaseStorageBucket,
 } from "@/lib/supabase-client";
 
-type ResponsiveImageFormat = "avif" | "webp" | "jpeg";
+type ResponsiveImageFormat = "webp";
 
 export type ResponsiveImageVariant = {
   format: ResponsiveImageFormat;
@@ -21,9 +21,7 @@ type ImageDeliverySettings = {
   responsiveVariantsEnabled: boolean;
   responsiveWidths: number[];
   formatQuality: {
-    avif: number;
     webp: number;
-    jpeg: number;
   };
   hero: {
     fallbackWidth: number;
@@ -36,20 +34,18 @@ type ImageDeliverySettings = {
 };
 
 const DEFAULT_IMAGE_DELIVERY_SETTINGS: ImageDeliverySettings = {
-  responsiveVariantsEnabled: import.meta.env.VITE_RESPONSIVE_IMAGE_VARIANTS === "true",
-  responsiveWidths: [480, 768, 1200, 1600],
+  responsiveVariantsEnabled: true,
+  responsiveWidths: [480, 768, 1080, 1440],
   formatQuality: {
-    avif: 52,
-    webp: 65,
-    jpeg: 75,
+    webp: 68,
   },
   hero: {
-    fallbackWidth: 900,
-    fallbackQuality: 82,
+    fallbackWidth: 1440,
+    fallbackQuality: 72,
   },
   gallery: {
-    fallbackWidth: 1200,
-    fallbackQuality: 72,
+    fallbackWidth: 1080,
+    fallbackQuality: 66,
   },
 };
 
@@ -156,9 +152,7 @@ function parseImageDeliverySettings(value: unknown): ImageDeliverySettings {
     responsiveVariantsEnabled?: unknown;
     responsiveWidths?: unknown;
     formatQuality?: {
-      avif?: unknown;
       webp?: unknown;
-      jpeg?: unknown;
     };
     hero?: {
       fallbackWidth?: unknown;
@@ -180,21 +174,9 @@ function parseImageDeliverySettings(value: unknown): ImageDeliverySettings {
       DEFAULT_IMAGE_DELIVERY_SETTINGS.responsiveWidths,
     ),
     formatQuality: {
-      avif: toClampedInt(
-        raw.formatQuality?.avif,
-        DEFAULT_IMAGE_DELIVERY_SETTINGS.formatQuality.avif,
-        20,
-        95,
-      ),
       webp: toClampedInt(
         raw.formatQuality?.webp,
         DEFAULT_IMAGE_DELIVERY_SETTINGS.formatQuality.webp,
-        20,
-        95,
-      ),
-      jpeg: toClampedInt(
-        raw.formatQuality?.jpeg,
-        DEFAULT_IMAGE_DELIVERY_SETTINGS.formatQuality.jpeg,
         20,
         95,
       ),

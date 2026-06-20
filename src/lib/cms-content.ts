@@ -164,24 +164,16 @@ async function resolveStorageUrl(
   }
 
   const supabase = getSupabaseClient();
-  const configuredBucket = getSupabaseStorageBucket();
-  const candidateBuckets = Array.from(new Set([configuredBucket, "gallery"]));
+  const bucket = getSupabaseStorageBucket();
+  const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, 60 * 60, {
+    transform,
+  });
 
-  for (const bucket of candidateBuckets) {
-    const transformed = await supabase.storage.from(bucket).createSignedUrl(path, 60 * 60, {
-      transform,
-    });
-    if (!transformed.error && transformed.data?.signedUrl) {
-      return transformed.data.signedUrl;
-    }
-
-    const plain = await supabase.storage.from(bucket).createSignedUrl(path, 60 * 60);
-    if (!plain.error && plain.data?.signedUrl) {
-      return plain.data.signedUrl;
-    }
+  if (error || !data?.signedUrl) {
+    return "";
   }
 
-  return "";
+  return data.signedUrl;
 }
 
 async function resolveResponsiveImageSet(

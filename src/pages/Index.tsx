@@ -57,6 +57,30 @@ const Index = () => {
   useEffect(() => {
     let mounted = true;
 
+    const runHero = async () => {
+      try {
+        const { fetchHeroContent } = await import("@/lib/cms-content");
+        const hero = await fetchHeroContent();
+        if (!mounted) {
+          return;
+        }
+        setHeroContent(hero);
+        writeCachedHeroContent(hero);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    runHero();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+
     const run = async () => {
       try {
         const { fetchPortfolioContent } = await import("@/lib/cms-content");

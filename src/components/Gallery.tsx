@@ -169,7 +169,7 @@ const Gallery = ({
         </div>
       </div>
 
-      <div className="columns-2 gap-5 space-y-5 min-h-[120px]">
+      <div className="columns-2 lg:columns-4 gap-5 space-y-5 min-h-[120px]">
         {filtered.length === 0 ? (
           <div className="w-full text-center py-12 text-base lg:text-lg text-muted-foreground">
             No published gallery items yet.

@@ -74,3 +74,15 @@ supabase functions deploy invite-cms-user
 This function is called by the CMS Users page to invite users by email, create/update their
 `profiles` row, and assign role (`admin`, `editor`, or `viewer`). It only allows callers whose
 `profiles.role` is `admin`.
+
+## CMS image delivery settings column
+
+Run this SQL migration so the CMS Site Settings page can persist image compression parameters:
+
+```bash
+supabase db push
+```
+
+Migration file:
+
+- `supabase/migrations/20260620_add_image_delivery_settings.sql`

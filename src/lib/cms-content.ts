@@ -17,17 +17,41 @@ export type ResponsiveImageSet = {
   variants: ResponsiveImageVariant[];
 };
 
-const RESPONSIVE_IMAGE_WIDTHS = [480, 768, 1200, 1600] as const;
-const RESPONSIVE_IMAGE_PRESETS: ReadonlyArray<{
-  format: ResponsiveImageFormat;
-  quality: number;
-}> = [
-  { format: "avif", quality: 52 },
-  { format: "webp", quality: 65 },
-  { format: "jpeg", quality: 75 },
-];
-const ENABLE_RESPONSIVE_IMAGE_VARIANTS =
-  import.meta.env.VITE_RESPONSIVE_IMAGE_VARIANTS === "true";
+type ImageDeliverySettings = {
+  responsiveVariantsEnabled: boolean;
+  responsiveWidths: number[];
+  formatQuality: {
+    avif: number;
+    webp: number;
+    jpeg: number;
+  };
+  hero: {
+    fallbackWidth: number;
+    fallbackQuality: number;
+  };
+  gallery: {
+    fallbackWidth: number;
+    fallbackQuality: number;
+  };
+};
+
+const DEFAULT_IMAGE_DELIVERY_SETTINGS: ImageDeliverySettings = {
+  responsiveVariantsEnabled: import.meta.env.VITE_RESPONSIVE_IMAGE_VARIANTS === "true",
+  responsiveWidths: [480, 768, 1200, 1600],
+  formatQuality: {
+    avif: 52,
+    webp: 65,
+    jpeg: 75,
+  },
+  hero: {
+    fallbackWidth: 900,
+    fallbackQuality: 82,
+  },
+  gallery: {
+    fallbackWidth: 1200,
+    fallbackQuality: 72,
+  },
+};
 
 export type HeroContent = {
   title: string;
@@ -95,16 +119,131 @@ export type PortfolioContent = {
   gear: GearContentItem[];
 };
 
-function mapHeroContent(data: {
+function toClampedInt(value: unknown, fallback: number, min: number, max: number) {
+  const parsed =
+    typeof value === "number"
+      ? value
+      : typeof value === "string"
+        ? Number(value)
+        : Number.NaN;
+  if (!Number.isFinite(parsed)) {
+    return fallback;
+  }
+  return Math.min(max, Math.max(min, Math.round(parsed)));
+}
+
+function normalizeResponsiveWidths(value: unknown, fallback: number[]) {
+  if (!Array.isArray(value)) {
+    return fallback;
+  }
+
+  const widths = value
+    .map((item) => toClampedInt(item, Number.NaN, 200, 4000))
+    .filter((item) => Number.isFinite(item));
+  if (widths.length === 0) {
+    return fallback;
+  }
+
+  return Array.from(new Set(widths)).sort((a, b) => a - b);
+}
+
+function parseImageDeliverySettings(value: unknown): ImageDeliverySettings {
+  if (!value || typeof value !== "object") {
+    return DEFAULT_IMAGE_DELIVERY_SETTINGS;
+  }
+
+  const raw = value as {
+    responsiveVariantsEnabled?: unknown;
+    responsiveWidths?: unknown;
+    formatQuality?: {
+      avif?: unknown;
+      webp?: unknown;
+      jpeg?: unknown;
+    };
+    hero?: {
+      fallbackWidth?: unknown;
+      fallbackQuality?: unknown;
+    };
+    gallery?: {
+      fallbackWidth?: unknown;
+      fallbackQuality?: unknown;
+    };
+  };
+
+  return {
+    responsiveVariantsEnabled:
+      typeof raw.responsiveVariantsEnabled === "boolean"
+        ? raw.responsiveVariantsEnabled
+        : DEFAULT_IMAGE_DELIVERY_SETTINGS.responsiveVariantsEnabled,
+    responsiveWidths: normalizeResponsiveWidths(
+      raw.responsiveWidths,
+      DEFAULT_IMAGE_DELIVERY_SETTINGS.responsiveWidths,
+    ),
+    formatQuality: {
+      avif: toClampedInt(
+        raw.formatQuality?.avif,
+        DEFAULT_IMAGE_DELIVERY_SETTINGS.formatQuality.avif,
+        20,
+        95,
+      ),
+      webp: toClampedInt(
+        raw.formatQuality?.webp,
+        DEFAULT_IMAGE_DELIVERY_SETTINGS.formatQuality.webp,
+        20,
+        95,
+      ),
+      jpeg: toClampedInt(
+        raw.formatQuality?.jpeg,
+        DEFAULT_IMAGE_DELIVERY_SETTINGS.formatQuality.jpeg,
+        20,
+        95,
+      ),
+    },
+    hero: {
+      fallbackWidth: toClampedInt(
+        raw.hero?.fallbackWidth,
+        DEFAULT_IMAGE_DELIVERY_SETTINGS.hero.fallbackWidth,
+        200,
+        4000,
+      ),
+      fallbackQuality: toClampedInt(
+        raw.hero?.fallbackQuality,
+        DEFAULT_IMAGE_DELIVERY_SETTINGS.hero.fallbackQuality,
+        20,
+        95,
+      ),
+    },
+    gallery: {
+      fallbackWidth: toClampedInt(
+        raw.gallery?.fallbackWidth,
+        DEFAULT_IMAGE_DELIVERY_SETTINGS.gallery.fallbackWidth,
+        200,
+        4000,
+      ),
+      fallbackQuality: toClampedInt(
+        raw.gallery?.fallbackQuality,
+        DEFAULT_IMAGE_DELIVERY_SETTINGS.gallery.fallbackQuality,
+        20,
+        95,
+      ),
+    },
+  };
+}
+
+function mapHeroContent(
+  data: {
   title: string | null;
   subtitle: string | null;
   description: string | null;
   cta_text: string | null;
   portrait_path: string | null;
-}): Promise<HeroContent> {
+  },
+  imageDelivery: ImageDeliverySettings,
+): Promise<HeroContent> {
   return resolveResponsiveImageSet(data.portrait_path, {
-    fallbackWidth: 900,
-    fallbackQuality: 82,
+    imageDelivery,
+    fallbackWidth: imageDelivery.hero.fallbackWidth,
+    fallbackQuality: imageDelivery.hero.fallbackQuality,
     sizes: "(min-width: 1024px) 30vw, 70vw",
     maxWidth: 1600,
   }).then((heroPortraitImage) => ({
@@ -119,6 +258,48 @@ function mapHeroContent(data: {
 
 function isAbsoluteAssetPath(path: string) {
   return /^(https?:\/\/|data:|blob:)/i.test(path);
+}
+
+function isMissingImageDeliveryColumnError(error: { message?: string } | null | undefined) {
+  if (!error?.message) {
+    return false;
+  }
+  const message = error.message.toLowerCase();
+  return message.includes("image_delivery_settings") && message.includes("column");
+}
+
+async function fetchSiteSettingsRow(supabase: ReturnType<typeof getSupabaseClient>) {
+  const withImageSettings = await supabase
+    .from("site_settings")
+    .select(
+      "site_name, tagline, email, phone, instagram, x, behance, default_title, default_description, image_delivery_settings",
+    )
+    .eq("id", true)
+    .maybeSingle();
+
+  if (withImageSettings.error && isMissingImageDeliveryColumnError(withImageSettings.error)) {
+    const fallback = await supabase
+      .from("site_settings")
+      .select("site_name, tagline, email, phone, instagram, x, behance, default_title, default_description")
+      .eq("id", true)
+      .maybeSingle();
+    if (fallback.error) {
+      throw new Error(fallback.error.message);
+    }
+    if (!fallback.data) {
+      return null;
+    }
+    return {
+      ...fallback.data,
+      image_delivery_settings: null,
+    };
+  }
+
+  if (withImageSettings.error) {
+    throw new Error(withImageSettings.error.message);
+  }
+
+  return withImageSettings.data;
 }
 
 function extractYoutubeId(value: string | null | undefined) {
@@ -179,6 +360,7 @@ async function resolveStorageUrl(
 async function resolveResponsiveImageSet(
   path: string | null | undefined,
   options: {
+    imageDelivery: ImageDeliverySettings;
     fallbackWidth: number;
     fallbackQuality: number;
     sizes: string;
@@ -188,33 +370,37 @@ async function resolveResponsiveImageSet(
   const src = await resolveStorageUrl(path, {
     width: options.fallbackWidth,
     quality: options.fallbackQuality,
+    format: "webp",
   });
 
-  if (!path || isAbsoluteAssetPath(path) || !ENABLE_RESPONSIVE_IMAGE_VARIANTS) {
+  if (!path || isAbsoluteAssetPath(path)) {
     return { src, sizes: options.sizes, variants: [] };
   }
 
-  const widths = RESPONSIVE_IMAGE_WIDTHS.filter(
+  if (!options.imageDelivery.responsiveVariantsEnabled) {
+    return { src, sizes: options.sizes, variants: [] };
+  }
+
+  const widths = options.imageDelivery.responsiveWidths.filter(
     (width) => options.maxWidth == null || width <= options.maxWidth,
   );
+  const webpQuality = options.imageDelivery.formatQuality.webp;
   const variantResults = await Promise.all(
-    widths.flatMap((width) =>
-      RESPONSIVE_IMAGE_PRESETS.map(async (preset) => {
-        const url = await resolveStorageUrl(path, {
-          width,
-          quality: preset.quality,
-          format: preset.format,
-        });
-        if (!url) {
-          return null;
-        }
-        return {
-          format: preset.format,
-          width,
-          url,
-        } satisfies ResponsiveImageVariant;
-      }),
-    ),
+    widths.map(async (width) => {
+      const url = await resolveStorageUrl(path, {
+        width,
+        quality: webpQuality,
+        format: "webp",
+      });
+      if (!url) {
+        return null;
+      }
+      return {
+        format: "webp",
+        width,
+        url,
+      } satisfies ResponsiveImageVariant;
+    }),
   );
 
   return {
@@ -229,15 +415,7 @@ async function resolveResponsiveImageSet(
 export async function fetchPortfolioContent(): Promise<PortfolioContent> {
   const supabase = getSupabaseClient();
 
-  const [
-    heroRes,
-    footerRes,
-    siteSettingsRes,
-    galleryCategoriesRes,
-    galleryRes,
-    videosRes,
-    gearRes,
-  ] =
+  const [heroRes, footerRes, siteSettingsRow, galleryCategoriesRes, galleryRes, videosRes, gearRes] =
     await Promise.all([
       supabase
         .from("hero")
@@ -253,13 +431,7 @@ export async function fetchPortfolioContent(): Promise<PortfolioContent> {
         .eq("id", true)
         .eq("status", "published")
         .maybeSingle(),
-      supabase
-        .from("site_settings")
-        .select(
-          "site_name, tagline, email, phone, instagram, x, behance, default_title, default_description",
-        )
-        .eq("id", true)
-        .maybeSingle(),
+      fetchSiteSettingsRow(supabase),
       supabase
         .from("gallery_categories")
         .select("name, sort_order")
@@ -286,7 +458,6 @@ export async function fetchPortfolioContent(): Promise<PortfolioContent> {
   const errors = [
     heroRes.error,
     footerRes.error,
-    siteSettingsRes.error,
     galleryCategoriesRes.error,
     galleryRes.error,
     videosRes.error,
@@ -296,7 +467,8 @@ export async function fetchPortfolioContent(): Promise<PortfolioContent> {
     throw new Error(errors[0]?.message || "Failed to load CMS content.");
   }
 
-  const heroContent = heroRes.data ? await mapHeroContent(heroRes.data) : null;
+  const imageDelivery = parseImageDeliverySettings(siteSettingsRow?.image_delivery_settings);
+  const heroContent = heroRes.data ? await mapHeroContent(heroRes.data, imageDelivery) : null;
   const gallery = await Promise.all(
     (galleryRes.data ?? []).map(async (row) => {
       const categoryPayload = row.gallery_categories as
@@ -308,8 +480,9 @@ export async function fetchPortfolioContent(): Promise<PortfolioContent> {
         : categoryPayload?.name;
 
       const image = await resolveResponsiveImageSet(row.image_path, {
-        fallbackWidth: 1200,
-        fallbackQuality: 72,
+        imageDelivery,
+        fallbackWidth: imageDelivery.gallery.fallbackWidth,
+        fallbackQuality: imageDelivery.gallery.fallbackQuality,
         sizes: "(min-width: 1024px) 20vw, 50vw",
         maxWidth: 1600,
       });
@@ -348,21 +521,21 @@ export async function fetchPortfolioContent(): Promise<PortfolioContent> {
       : null,
     siteSettings: {
       brand: {
-        siteName: siteSettingsRes.data?.site_name ?? "",
-        tagline: siteSettingsRes.data?.tagline ?? "",
+        siteName: siteSettingsRow?.site_name ?? "",
+        tagline: siteSettingsRow?.tagline ?? "",
       },
       contact: {
-        email: siteSettingsRes.data?.email ?? "",
-        phone: siteSettingsRes.data?.phone ?? "",
+        email: siteSettingsRow?.email ?? "",
+        phone: siteSettingsRow?.phone ?? "",
       },
       social: {
-        instagram: siteSettingsRes.data?.instagram ?? "",
-        x: siteSettingsRes.data?.x ?? "",
-        behance: siteSettingsRes.data?.behance ?? "",
+        instagram: siteSettingsRow?.instagram ?? "",
+        x: siteSettingsRow?.x ?? "",
+        behance: siteSettingsRow?.behance ?? "",
       },
       seo: {
-        defaultTitle: siteSettingsRes.data?.default_title ?? "",
-        defaultDescription: siteSettingsRes.data?.default_description ?? "",
+        defaultTitle: siteSettingsRow?.default_title ?? "",
+        defaultDescription: siteSettingsRow?.default_description ?? "",
       },
     },
     galleryCategories: (galleryCategoriesRes.data ?? [])
@@ -376,20 +549,23 @@ export async function fetchPortfolioContent(): Promise<PortfolioContent> {
 
 export async function fetchHeroContent(): Promise<HeroContent | null> {
   const supabase = getSupabaseClient();
-  const { data, error } = await supabase
-    .from("hero")
-    .select("title, subtitle, description, cta_text, portrait_path, status, published_at")
-    .eq("id", true)
-    .eq("status", "published")
-    .maybeSingle();
+  const [heroRes, siteSettingsRow] = await Promise.all([
+    supabase
+      .from("hero")
+      .select("title, subtitle, description, cta_text, portrait_path, status, published_at")
+      .eq("id", true)
+      .eq("status", "published")
+      .maybeSingle(),
+    fetchSiteSettingsRow(supabase),
+  ]);
 
-  if (error) {
-    throw new Error(error.message);
+  if (heroRes.error) {
+    throw new Error(heroRes.error.message);
   }
-
-  if (!data) {
+  if (!heroRes.data) {
     return null;
   }
 
-  return mapHeroContent(data);
+  const imageDelivery = parseImageDeliverySettings(siteSettingsRow?.image_delivery_settings);
+  return mapHeroContent(heroRes.data, imageDelivery);
 }

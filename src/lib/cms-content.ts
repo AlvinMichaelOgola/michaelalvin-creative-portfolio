@@ -48,6 +48,7 @@ const DEFAULT_IMAGE_DELIVERY_SETTINGS: ImageDeliverySettings = {
     fallbackQuality: 66,
   },
 };
+const STABLE_HERO_STORAGE_PATH = "gallery/hero-current.webp";
 
 export type HeroContent = {
   title: string;
@@ -222,13 +223,7 @@ function mapHeroContent(
   },
   imageDelivery: ImageDeliverySettings,
 ): Promise<HeroContent> {
-  return resolveResponsiveImageSet(data.portrait_path, {
-    imageDelivery,
-    fallbackWidth: imageDelivery.hero.fallbackWidth,
-    fallbackQuality: imageDelivery.hero.fallbackQuality,
-    sizes: "(min-width: 1024px) 30vw, 70vw",
-    maxWidth: 1600,
-  }).then((heroPortraitImage) => ({
+  return resolveHeroPortraitImage(data.portrait_path, imageDelivery).then((heroPortraitImage) => ({
     title: data.title ?? "",
     subtitle: data.subtitle ?? "",
     description: data.description ?? "",
@@ -236,6 +231,35 @@ function mapHeroContent(
     portraitUrl: heroPortraitImage.src,
     portraitImage: heroPortraitImage,
   }));
+}
+
+async function resolveHeroPortraitImage(
+  portraitPath: string | null,
+  imageDelivery: ImageDeliverySettings,
+): Promise<ResponsiveImageSet> {
+  const stableHeroImage = await resolveResponsiveImageSet(STABLE_HERO_STORAGE_PATH, {
+    imageDelivery,
+    fallbackWidth: imageDelivery.hero.fallbackWidth,
+    fallbackQuality: imageDelivery.hero.fallbackQuality,
+    sizes: "(min-width: 1024px) 30vw, 70vw",
+    maxWidth: 1600,
+  });
+
+  if (stableHeroImage.src) {
+    return stableHeroImage;
+  }
+
+  if (!portraitPath || portraitPath === STABLE_HERO_STORAGE_PATH) {
+    return stableHeroImage;
+  }
+
+  return resolveResponsiveImageSet(portraitPath, {
+    imageDelivery,
+    fallbackWidth: imageDelivery.hero.fallbackWidth,
+    fallbackQuality: imageDelivery.hero.fallbackQuality,
+    sizes: "(min-width: 1024px) 30vw, 70vw",
+    maxWidth: 1600,
+  });
 }
 
 function isAbsoluteAssetPath(path: string) {

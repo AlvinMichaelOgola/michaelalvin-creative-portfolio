@@ -77,7 +77,16 @@ function writeCachedPortfolioContent(content: PortfolioContent | null) {
 }
 
 function getInitialHeroContent() {
-  return readCachedHeroContent() ?? readCachedPortfolioContent()?.hero ?? HARDCODED_HERO_CONTENT;
+  const cachedHero = readCachedHeroContent() ?? readCachedPortfolioContent()?.hero;
+  if (!cachedHero) {
+    return HARDCODED_HERO_CONTENT;
+  }
+
+  return {
+    ...cachedHero,
+    portraitUrl: HARDCODED_HERO_CONTENT.portraitUrl,
+    portraitImage: undefined,
+  } satisfies HeroContent;
 }
 
 const Index = () => {

@@ -49,6 +49,7 @@ const DEFAULT_IMAGE_DELIVERY_SETTINGS: ImageDeliverySettings = {
   },
 };
 const STABLE_HERO_STORAGE_PATH = "gallery/hero-current.webp";
+const MAX_COMPRESSED_IMAGE_BYTES = 150 * 1024;
 
 export type HeroContent = {
   title: string;
@@ -421,6 +422,33 @@ async function resolveResponsiveImageSet(
   };
 }
 
+async function isCompressedStorageObject(path: string | null | undefined) {
+  if (!path || isAbsoluteAssetPath(path)) {
+    return false;
+  }
+
+  const rawUrl = await resolveStorageUrl(path);
+  if (!rawUrl) {
+    return false;
+  }
+
+  try {
+    const response = await fetch(`${rawUrl}${rawUrl.includes("?") ? "&" : "?"}cb=${Date.now()}`, {
+      method: "HEAD",
+    });
+    if (!response.ok) {
+      return false;
+    }
+
+    const contentType = response.headers.get("content-type")?.toLowerCase() ?? "";
+    const contentLength = Number(response.headers.get("content-length"));
+    const hasSize = Number.isFinite(contentLength) && contentLength >= 0;
+    return contentType.includes("image/webp") && hasSize && contentLength <= MAX_COMPRESSED_IMAGE_BYTES;
+  } catch {
+    return false;
+  }
+}
+
 export async function fetchPortfolioContent(): Promise<PortfolioContent> {
   const supabase = getSupabaseClient();
 
@@ -480,6 +508,11 @@ export async function fetchPortfolioContent(): Promise<PortfolioContent> {
   const heroContent = heroRes.data ? await mapHeroContent(heroRes.data, imageDelivery) : null;
   const gallery = await Promise.all(
     (galleryRes.data ?? []).map(async (row) => {
+      const compressed = await isCompressedStorageObject(row.image_path);
+      if (!compressed) {
+        return null;
+      }
+
       const categoryPayload = row.gallery_categories as
         | { name: string }
         | { name: string }[]
@@ -551,7 +584,9 @@ export async function fetchPortfolioContent(): Promise<PortfolioContent> {
     galleryCategories: (galleryCategoriesRes.data ?? [])
       .map((row) => row.name ?? "")
       .filter((name) => name.trim().length > 0),
-    gallery: gallery.filter((item) => item.src && item.category),
+    gallery: gallery.filter(
+      (item): item is GalleryContentItem => item !== null && Boolean(item.src) && Boolean(item.category),
+    ),
     videos: videos.filter((item) => item.youtubeId),
     gear: gear.filter((item) => item.title),
   };
@@ -604,6 +639,15 @@ export async function rehydrateCachedPortfolioContent(content: PortfolioContent 
     content.gallery.map(async (item) => {
       const imagePath = item.imagePath;
       if (!imagePath) {
+        return {
+          ...item,
+          src: "",
+          image: undefined,
+        } satisfies GalleryContentItem;
+      }
+
+      const compressed = await isCompressedStorageObject(imagePath);
+      if (!compressed) {
         return {
           ...item,
           src: "",

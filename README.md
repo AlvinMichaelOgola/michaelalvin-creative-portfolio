@@ -41,7 +41,7 @@ Compression profile:
 
 - Converts gallery uploads to **WebP**
 - Enforces max longest edge of **2400px**
-- Targets final file size of **<= 100KB**
+- Targets final file size of **<= 150KB**
 
 Deploy command:
 

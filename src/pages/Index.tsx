@@ -6,6 +6,7 @@ import heroPortrait from "@/assets/hero-portrait.jpg";
 
 const HERO_CACHE_KEY = "portfolio.hero.content.v1";
 const PORTFOLIO_CACHE_KEY = "portfolio.cms.content.v1";
+const BOOT_MIN_DURATION_MS = 700;
 const HARDCODED_HERO_CONTENT: HeroContent = {
   title: "Michael Alvin",
   subtitle: "COMMERCIAL • PORTRAIT • ADVENTURE • FILM",
@@ -83,6 +84,8 @@ const Index = () => {
   const [contactOpen, setContactOpen] = useState(false);
   const [cmsContent, setCmsContent] = useState<PortfolioContent | null>(readCachedPortfolioContent);
   const [heroContent, setHeroContent] = useState<HeroContent | null>(getInitialHeroContent);
+  const [booting, setBooting] = useState(true);
+  const [bootProgress, setBootProgress] = useState(8);
 
   useEffect(() => {
     if (contactOpen) {
@@ -97,6 +100,18 @@ const Index = () => {
 
   useEffect(() => {
     let mounted = true;
+    const startedAt = Date.now();
+    let intervalId: number | undefined;
+    let finishTimeoutId: number | undefined;
+
+    intervalId = window.setInterval(() => {
+      setBootProgress((previous) => {
+        if (previous >= 88) {
+          return previous;
+        }
+        return previous + 3;
+      });
+    }, 120);
 
     const run = async () => {
       try {
@@ -111,6 +126,21 @@ const Index = () => {
         writeCachedHeroContent(content.hero);
       } catch (error) {
         console.error(error);
+      } finally {
+        if (!mounted) {
+          return;
+        }
+        const elapsed = Date.now() - startedAt;
+        const remaining = Math.max(0, BOOT_MIN_DURATION_MS - elapsed);
+        finishTimeoutId = window.setTimeout(() => {
+          setBootProgress(100);
+          window.setTimeout(() => {
+            if (!mounted) {
+              return;
+            }
+            setBooting(false);
+          }, 220);
+        }, remaining);
       }
     };
 
@@ -118,6 +148,12 @@ const Index = () => {
 
     return () => {
       mounted = false;
+      if (intervalId) {
+        window.clearInterval(intervalId);
+      }
+      if (finishTimeoutId) {
+        window.clearTimeout(finishTimeoutId);
+      }
     };
   }, []);
 
@@ -169,27 +205,54 @@ const Index = () => {
 
   return (
     <div className="bg-background text-foreground min-h-screen overflow-x-hidden relative">
+      {booting ? (
+        <div className="boot-overlay">
+          <div className="boot-overlay__grain" />
+          <div className="boot-overlay__card">
+            <p className="text-xs uppercase tracking-[0.35em] text-foreground/60">Shutterhub</p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-foreground">Preparing portfolio</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Loading content and assets…</p>
+            <div className="mt-5 h-1.5 w-full overflow-hidden rounded-full bg-muted/70">
+              <div
+                className="h-full rounded-full bg-foreground transition-all duration-200 ease-out"
+                style={{ width: `${bootProgress}%` }}
+              />
+            </div>
+            <p className="mt-2 text-right text-xs text-muted-foreground">{bootProgress}%</p>
+          </div>
+        </div>
+      ) : null}
       <div className="pointer-events-none absolute inset-0 -z-0 overflow-hidden">
         <div className="absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-foreground/10 blur-3xl" />
         <div className="absolute top-[35%] -left-24 h-64 w-64 rounded-full bg-foreground/5 blur-3xl" />
         <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-foreground/10 blur-3xl" />
       </div>
       <ThemeToggle />
-      <Hero
-        onContactClick={() => setContactOpen(true)}
-        content={heroContent ?? cmsContent?.hero}
-      />
-      <Suspense fallback={null}>
-        <Gallery
-          items={cmsContent?.gallery}
-          categories={cmsContent?.galleryCategories}
-        />
-        <VideoTheater videos={cmsContent?.videos} />
-        <GearVault gear={cmsContent?.gear} />
-        <Footer
+      <div className="boot-section boot-section--hero">
+        <Hero
           onContactClick={() => setContactOpen(true)}
-          content={cmsContent?.footer}
+          content={heroContent ?? cmsContent?.hero}
         />
+      </div>
+      <Suspense fallback={null}>
+        <div className="boot-section boot-section--gallery">
+          <Gallery
+            items={cmsContent?.gallery}
+            categories={cmsContent?.galleryCategories}
+          />
+        </div>
+        <div className="boot-section boot-section--video">
+          <VideoTheater videos={cmsContent?.videos} />
+        </div>
+        <div className="boot-section boot-section--gear">
+          <GearVault gear={cmsContent?.gear} />
+        </div>
+        <div className="boot-section boot-section--footer">
+          <Footer
+            onContactClick={() => setContactOpen(true)}
+            content={cmsContent?.footer}
+          />
+        </div>
       </Suspense>
       {contactOpen ? (
         <Suspense fallback={null}>

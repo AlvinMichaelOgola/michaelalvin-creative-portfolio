@@ -233,6 +233,76 @@
     from { transform: translateX(0); }
     to { transform: translateX(-50%); }
   }
+
+  .boot-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: grid;
+    place-items: center;
+    background: hsla(var(--background) / 0.78);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    pointer-events: none;
+  }
+
+  .boot-overlay__grain {
+    position: absolute;
+    inset: 0;
+    opacity: 0.05;
+    background-image: radial-gradient(circle at 20% 10%, hsla(var(--foreground) / 0.5) 0 1px, transparent 1px),
+      radial-gradient(circle at 80% 70%, hsla(var(--foreground) / 0.45) 0 1px, transparent 1px);
+    background-size: 10px 10px, 13px 13px;
+    animation: boot-grain-shift 1.4s linear infinite;
+  }
+
+  .boot-overlay__card {
+    width: min(90vw, 28rem);
+    position: relative;
+    z-index: 1;
+    border-radius: 1.25rem;
+    padding: 1.25rem 1.4rem;
+    background: hsla(var(--background) / 0.86);
+    border: 1px solid hsla(var(--foreground) / 0.08);
+    box-shadow: 0 30px 60px -45px hsla(0 0% 0% / 0.8);
+  }
+
+  .boot-section {
+    opacity: 0;
+    transform: translateY(12px);
+    animation: section-reveal 0.65s ease-out forwards;
+  }
+
+  .boot-section--hero { animation-delay: 0.08s; }
+  .boot-section--gallery { animation-delay: 0.18s; }
+  .boot-section--video { animation-delay: 0.27s; }
+  .boot-section--gear { animation-delay: 0.33s; }
+  .boot-section--footer { animation-delay: 0.39s; }
+
+  .tile-enter {
+    opacity: 0;
+    transform: translateY(10px) scale(0.99);
+    animation: tile-reveal 0.5s ease-out forwards;
+  }
+
+  @keyframes boot-grain-shift {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(8px, 6px, 0); }
+  }
+
+  @keyframes section-reveal {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes tile-reveal {
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
 }
 
 /* Scrollbar */

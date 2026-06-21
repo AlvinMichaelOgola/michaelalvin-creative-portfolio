@@ -5,6 +5,7 @@ import type { GalleryContentItem } from "@/lib/cms-content";
 type GalleryItem = GalleryContentItem & {
   tall?: boolean;
 };
+const INITIAL_VISIBLE_COUNT = 6;
 
 function buildSrcSet(
   variants: NonNullable<GalleryItem["image"]>["variants"] | undefined,
@@ -46,6 +47,8 @@ const Gallery = ({
   const [shuffleEnabled, setShuffleEnabled] = useState(false);
   const [shuffleSeed, setShuffleSeed] = useState(0);
   const [lightbox, setLightbox] = useState<string | null>(null);
+  const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     if (active === "All") {
@@ -77,6 +80,33 @@ const Gallery = ({
           .filter((item) => item.category === active)
           .slice()
           .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  const displayedItems = showAll ? filtered : filtered.slice(0, INITIAL_VISIBLE_COUNT);
+  const remainingItems = filtered.slice(INITIAL_VISIBLE_COUNT);
+
+  useEffect(() => {
+    setShowAll(false);
+  }, [active, shuffleEnabled, shuffleSeed, items, cmsCategories]);
+
+  useEffect(() => {
+    if (remainingItems.length === 0) {
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      for (const item of remainingItems) {
+        const src = item.image?.src || item.src;
+        if (!src || loadedImages[src]) {
+          continue;
+        }
+        const preload = new Image();
+        preload.decoding = "async";
+        (preload as HTMLImageElement & { fetchPriority?: string }).fetchPriority = "low";
+        preload.src = src;
+      }
+    }, 250);
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [remainingItems, loadedImages]);
 
   function shuffleArray(array: GalleryItem[]) {
     const arr = array.slice();
@@ -175,13 +205,19 @@ const Gallery = ({
             No published gallery items yet.
           </div>
         ) : (
-          filtered.map((item, index) => (
+          displayedItems.map((item, index) => (
               <div
                 key={item.src}
-                className="break-inside-avoid cursor-pointer group min-w-[44px] min-h-[44px]"
+                className="break-inside-avoid cursor-pointer group min-w-[44px] min-h-[44px] tile-enter"
+                style={{ animationDelay: `${Math.min(index * 55, 440)}ms` }}
                 onClick={() => setLightbox(item.src)}
               >
                 <div className="rounded-3xl overflow-hidden relative glass-frame">
+                  <div
+                    className={`absolute inset-0 bg-muted/60 animate-pulse transition-opacity duration-500 ${
+                      loadedImages[item.src] ? "opacity-0" : "opacity-100"
+                    }`}
+                  />
                   <picture>
                     {item.image ? (
                       <>
@@ -197,11 +233,16 @@ const Gallery = ({
                     <img
                       src={item.image?.src || item.src}
                       alt={item.alt}
-                      className="w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                      loading="lazy"
+                      className={`w-full object-cover transition-all duration-700 ease-out group-hover:scale-105 ${
+                        loadedImages[item.src] ? "opacity-100 blur-0" : "opacity-0 blur-sm"
+                      }`}
+                      loading={index < INITIAL_VISIBLE_COUNT ? "eager" : "lazy"}
                       decoding="async"
-                      fetchPriority="low"
+                      fetchPriority={index < INITIAL_VISIBLE_COUNT ? "high" : "low"}
                       sizes={item.image?.sizes ?? "(min-width: 1024px) 20vw, 50vw"}
+                      onLoad={() =>
+                        setLoadedImages((previous) => ({ ...previous, [item.src]: true }))
+                      }
                     />
                   </picture>
                   <div className="absolute inset-0 bg-background/0 group-hover:bg-background/20 transition-colors duration-500" />
@@ -215,6 +256,16 @@ const Gallery = ({
             ))
         )}
       </div>
+      {filtered.length > INITIAL_VISIBLE_COUNT ? (
+        <div className="mt-8 flex justify-center">
+          <button
+            onClick={() => setShowAll((previous) => !previous)}
+            className="hero-cta-contrast"
+          >
+            {showAll ? "Show less" : `Show more (${filtered.length - INITIAL_VISIBLE_COUNT})`}
+          </button>
+        </div>
+      ) : null}
 
       {lightbox && (
           <div

@@ -56,6 +56,7 @@ export type HeroContent = {
   description: string;
   ctaText: string;
   portraitUrl: string;
+  portraitPath?: string;
   portraitImage?: ResponsiveImageSet;
 };
 
@@ -90,6 +91,7 @@ export type GalleryContentItem = {
   alt: string;
   category: string;
   order: number;
+  imagePath?: string;
   image?: ResponsiveImageSet;
 };
 
@@ -229,6 +231,7 @@ function mapHeroContent(
     description: data.description ?? "",
     ctaText: data.cta_text ?? "",
     portraitUrl: heroPortraitImage.src,
+    portraitPath: data.portrait_path ?? STABLE_HERO_STORAGE_PATH,
     portraitImage: heroPortraitImage,
   }));
 }
@@ -498,6 +501,7 @@ export async function fetchPortfolioContent(): Promise<PortfolioContent> {
         alt: row.alt_text ?? "",
         category: categoryName ?? "",
         order: row.sort_order ?? 0,
+        imagePath: row.image_path ?? "",
         image,
       } satisfies GalleryContentItem;
     }),
@@ -574,4 +578,58 @@ export async function fetchHeroContent(): Promise<HeroContent | null> {
 
   const imageDelivery = parseImageDeliverySettings(siteSettingsRow?.image_delivery_settings);
   return mapHeroContent(heroRes.data, imageDelivery);
+}
+
+export async function rehydrateCachedPortfolioContent(content: PortfolioContent | null) {
+  if (!content) {
+    return null;
+  }
+
+  const imageDelivery = DEFAULT_IMAGE_DELIVERY_SETTINGS;
+  const heroPath = content.hero?.portraitPath;
+  const heroImage = heroPath
+    ? await resolveHeroPortraitImage(heroPath, imageDelivery)
+    : await resolveHeroPortraitImage(STABLE_HERO_STORAGE_PATH, imageDelivery);
+
+  const hero = content.hero
+    ? {
+        ...content.hero,
+        portraitUrl: heroImage.src,
+        portraitPath: heroPath ?? STABLE_HERO_STORAGE_PATH,
+        portraitImage: heroImage.src ? heroImage : undefined,
+      }
+    : null;
+
+  const gallery = await Promise.all(
+    content.gallery.map(async (item) => {
+      const imagePath = item.imagePath;
+      if (!imagePath) {
+        return {
+          ...item,
+          src: "",
+          image: undefined,
+        } satisfies GalleryContentItem;
+      }
+
+      const image = await resolveResponsiveImageSet(imagePath, {
+        imageDelivery,
+        fallbackWidth: imageDelivery.gallery.fallbackWidth,
+        fallbackQuality: imageDelivery.gallery.fallbackQuality,
+        sizes: "(min-width: 1024px) 20vw, 50vw",
+        maxWidth: 1600,
+      });
+
+      return {
+        ...item,
+        src: image.src,
+        image,
+      } satisfies GalleryContentItem;
+    }),
+  );
+
+  return {
+    ...content,
+    hero,
+    gallery: gallery.filter((item) => item.src && item.category),
+  } satisfies PortfolioContent;
 }

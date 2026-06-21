@@ -7,6 +7,7 @@ import heroPortrait from "@/assets/hero-portrait.jpg";
 const HERO_CACHE_KEY = "portfolio.hero.content.v1";
 const PORTFOLIO_CACHE_KEY = "portfolio.cms.content.v1";
 const BOOT_MIN_DURATION_MS = 700;
+const STABLE_HERO_STORAGE_PATH = "gallery/hero-current.webp";
 const HARDCODED_HERO_CONTENT: HeroContent = {
   title: "Michael Alvin",
   subtitle: "COMMERCIAL • PORTRAIT • ADVENTURE • FILM",
@@ -20,6 +21,36 @@ const GearVault = lazy(() => import("@/components/GearVault"));
 const Footer = lazy(() => import("@/components/Footer"));
 const ContactModal = lazy(() => import("@/components/ContactModal"));
 
+function toCacheSafeHeroContent(hero: HeroContent | null) {
+  if (!hero) {
+    return null;
+  }
+
+  return {
+    ...hero,
+    portraitUrl: "",
+    portraitPath: hero.portraitPath ?? STABLE_HERO_STORAGE_PATH,
+    portraitImage: undefined,
+  } satisfies HeroContent;
+}
+
+function toCacheSafePortfolioContent(content: PortfolioContent | null) {
+  if (!content) {
+    return null;
+  }
+
+  return {
+    ...content,
+    hero: toCacheSafeHeroContent(content.hero),
+    gallery: content.gallery.map((item) => ({
+      ...item,
+      src: "",
+      imagePath: item.imagePath ?? "",
+      image: undefined,
+    })),
+  } satisfies PortfolioContent;
+}
+
 function readCachedHeroContent() {
   if (typeof window === "undefined") {
     return null;
@@ -30,7 +61,7 @@ function readCachedHeroContent() {
     if (!raw) {
       return null;
     }
-    return JSON.parse(raw) as HeroContent | null;
+    return toCacheSafeHeroContent(JSON.parse(raw) as HeroContent | null);
   } catch {
     return null;
   }
@@ -42,7 +73,7 @@ function writeCachedHeroContent(hero: HeroContent | null) {
   }
 
   try {
-    window.localStorage.setItem(HERO_CACHE_KEY, JSON.stringify(hero));
+    window.localStorage.setItem(HERO_CACHE_KEY, JSON.stringify(toCacheSafeHeroContent(hero)));
   } catch {
     // Ignore storage write failures to keep runtime resilient.
   }
@@ -58,7 +89,7 @@ function readCachedPortfolioContent() {
     if (!raw) {
       return null;
     }
-    return JSON.parse(raw) as PortfolioContent | null;
+    return toCacheSafePortfolioContent(JSON.parse(raw) as PortfolioContent | null);
   } catch {
     return null;
   }
@@ -70,7 +101,10 @@ function writeCachedPortfolioContent(content: PortfolioContent | null) {
   }
 
   try {
-    window.localStorage.setItem(PORTFOLIO_CACHE_KEY, JSON.stringify(content));
+    window.localStorage.setItem(
+      PORTFOLIO_CACHE_KEY,
+      JSON.stringify(toCacheSafePortfolioContent(content)),
+    );
   } catch {
     // Ignore storage write failures to keep runtime resilient.
   }
@@ -110,10 +144,7 @@ const Index = () => {
   useEffect(() => {
     let mounted = true;
     const startedAt = Date.now();
-    let intervalId: number | undefined;
-    let finishTimeoutId: number | undefined;
-
-    intervalId = window.setInterval(() => {
+    const intervalId = window.setInterval(() => {
       setBootProgress((previous) => {
         if (previous >= 88) {
           return previous;
@@ -121,10 +152,21 @@ const Index = () => {
         return previous + 3;
       });
     }, 120);
+    let finishTimeoutId: number | undefined;
 
     const run = async () => {
       try {
-        const { fetchPortfolioContent } = await import("@/lib/cms-content");
+        const { fetchPortfolioContent, rehydrateCachedPortfolioContent } = await import(
+          "@/lib/cms-content"
+        );
+        const cachedSnapshot = readCachedPortfolioContent();
+        if (cachedSnapshot) {
+          const hydratedCached = await rehydrateCachedPortfolioContent(cachedSnapshot);
+          if (mounted && hydratedCached) {
+            setCmsContent(hydratedCached);
+            setHeroContent(hydratedCached.hero ?? HARDCODED_HERO_CONTENT);
+          }
+        }
         const content = await fetchPortfolioContent();
         if (!mounted) {
           return;
@@ -136,20 +178,19 @@ const Index = () => {
       } catch (error) {
         console.error(error);
       } finally {
-        if (!mounted) {
-          return;
+        if (mounted) {
+          const elapsed = Date.now() - startedAt;
+          const remaining = Math.max(0, BOOT_MIN_DURATION_MS - elapsed);
+          finishTimeoutId = window.setTimeout(() => {
+            setBootProgress(100);
+            window.setTimeout(() => {
+              if (!mounted) {
+                return;
+              }
+              setBooting(false);
+            }, 220);
+          }, remaining);
         }
-        const elapsed = Date.now() - startedAt;
-        const remaining = Math.max(0, BOOT_MIN_DURATION_MS - elapsed);
-        finishTimeoutId = window.setTimeout(() => {
-          setBootProgress(100);
-          window.setTimeout(() => {
-            if (!mounted) {
-              return;
-            }
-            setBooting(false);
-          }, 220);
-        }, remaining);
       }
     };
 
@@ -157,9 +198,7 @@ const Index = () => {
 
     return () => {
       mounted = false;
-      if (intervalId) {
-        window.clearInterval(intervalId);
-      }
+      window.clearInterval(intervalId);
       if (finishTimeoutId) {
         window.clearTimeout(finishTimeoutId);
       }

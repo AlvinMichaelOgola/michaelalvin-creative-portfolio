@@ -6,6 +6,8 @@ type GalleryItem = GalleryContentItem & {
   tall?: boolean;
 };
 const INITIAL_VISIBLE_COUNT = 6;
+const EMPTY_ITEMS: GalleryItem[] = [];
+const EMPTY_CATEGORIES: string[] = [];
 
 function buildSrcSet(
   variants: NonNullable<GalleryItem["image"]>["variants"] | undefined,
@@ -27,8 +29,8 @@ const Gallery = ({
   items?: GalleryItem[];
   categories?: string[];
 }) => {
-  const sourceItems = items ?? [];
-  const sourceCategories = cmsCategories ?? [];
+  const sourceItems = items ?? EMPTY_ITEMS;
+  const sourceCategories = cmsCategories ?? EMPTY_CATEGORIES;
   const categories = useMemo(
     () => [
       "All",
@@ -69,7 +71,10 @@ const Gallery = ({
     [sourceItems],
   );
 
-  const shuffledAll = useMemo(() => shuffleArray(orderedAll), [orderedAll, shuffleSeed]);
+  const shuffledAll = useMemo(
+    () => shuffleArrayWithSeed(orderedAll, shuffleSeed),
+    [orderedAll, shuffleSeed],
+  );
 
   const filtered =
     active === "All"
@@ -107,15 +112,6 @@ const Gallery = ({
       window.clearTimeout(timer);
     };
   }, [remainingItems, loadedImages]);
-
-  function shuffleArray(array: GalleryItem[]) {
-    const arr = array.slice();
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
-  }
 
   const filterRef = useRef<HTMLDivElement>(null);
   const [hideFilter, setHideFilter] = useState(false);
@@ -285,3 +281,18 @@ const Gallery = ({
 };
 
 export default Gallery;
+
+function shuffleArrayWithSeed(array: GalleryItem[], seed: number) {
+  const arr = array.slice();
+  let value = (seed || 1) >>> 0;
+  const random = () => {
+    value = (value * 1664525 + 1013904223) >>> 0;
+    return value / 4294967296;
+  };
+
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}

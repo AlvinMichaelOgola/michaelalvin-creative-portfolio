@@ -2,8 +2,17 @@ import { lazy, Suspense, useState, useEffect } from "react";
 import Hero from "@/components/Hero";
 import ThemeToggle from "@/components/ThemeToggle";
 import type { HeroContent, PortfolioContent } from "@/lib/cms-content";
+import heroPortrait from "@/assets/hero-portrait.jpg";
 
 const HERO_CACHE_KEY = "portfolio.hero.content.v1";
+const PORTFOLIO_CACHE_KEY = "portfolio.cms.content.v1";
+const HARDCODED_HERO_CONTENT: HeroContent = {
+  title: "Michael Alvin",
+  subtitle: "COMMERCIAL • PORTRAIT • ADVENTURE • FILM",
+  description: "Visual stories crafted with intention, precision, and style.",
+  ctaText: "Let’s Work Together",
+  portraitUrl: heroPortrait,
+};
 const Gallery = lazy(() => import("@/components/Gallery"));
 const VideoTheater = lazy(() => import("@/components/VideoTheater"));
 const GearVault = lazy(() => import("@/components/GearVault"));
@@ -38,10 +47,42 @@ function writeCachedHeroContent(hero: HeroContent | null) {
   }
 }
 
+function readCachedPortfolioContent() {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(PORTFOLIO_CACHE_KEY);
+    if (!raw) {
+      return null;
+    }
+    return JSON.parse(raw) as PortfolioContent | null;
+  } catch {
+    return null;
+  }
+}
+
+function writeCachedPortfolioContent(content: PortfolioContent | null) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(PORTFOLIO_CACHE_KEY, JSON.stringify(content));
+  } catch {
+    // Ignore storage write failures to keep runtime resilient.
+  }
+}
+
+function getInitialHeroContent() {
+  return readCachedHeroContent() ?? readCachedPortfolioContent()?.hero ?? HARDCODED_HERO_CONTENT;
+}
+
 const Index = () => {
   const [contactOpen, setContactOpen] = useState(false);
-  const [cmsContent, setCmsContent] = useState<PortfolioContent | null>(null);
-  const [heroContent, setHeroContent] = useState<HeroContent | null>(readCachedHeroContent);
+  const [cmsContent, setCmsContent] = useState<PortfolioContent | null>(readCachedPortfolioContent);
+  const [heroContent, setHeroContent] = useState<HeroContent | null>(getInitialHeroContent);
 
   useEffect(() => {
     if (contactOpen) {
@@ -57,30 +98,6 @@ const Index = () => {
   useEffect(() => {
     let mounted = true;
 
-    const runHero = async () => {
-      try {
-        const { fetchHeroContent } = await import("@/lib/cms-content");
-        const hero = await fetchHeroContent();
-        if (!mounted) {
-          return;
-        }
-        setHeroContent(hero);
-        writeCachedHeroContent(hero);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    runHero();
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    let mounted = true;
-
     const run = async () => {
       try {
         const { fetchPortfolioContent } = await import("@/lib/cms-content");
@@ -89,7 +106,8 @@ const Index = () => {
           return;
         }
         setCmsContent(content);
-        setHeroContent(content.hero);
+        setHeroContent(content.hero ?? HARDCODED_HERO_CONTENT);
+        writeCachedPortfolioContent(content);
         writeCachedHeroContent(content.hero);
       } catch (error) {
         console.error(error);

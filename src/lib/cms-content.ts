@@ -50,6 +50,7 @@ const DEFAULT_IMAGE_DELIVERY_SETTINGS: ImageDeliverySettings = {
 };
 const STABLE_HERO_STORAGE_PATH = "gallery/hero-current.webp";
 const MAX_COMPRESSED_IMAGE_BYTES = 150 * 1024;
+const ACCEPTED_COMPRESSED_MIME_TYPES = ["image/webp", "image/jpeg", "image/jpg"] as const;
 
 export type HeroContent = {
   title: string;
@@ -443,7 +444,10 @@ async function isCompressedStorageObject(path: string | null | undefined) {
     const contentType = response.headers.get("content-type")?.toLowerCase() ?? "";
     const contentLength = Number(response.headers.get("content-length"));
     const hasSize = Number.isFinite(contentLength) && contentLength >= 0;
-    return contentType.includes("image/webp") && hasSize && contentLength <= MAX_COMPRESSED_IMAGE_BYTES;
+    const hasCompressedMime = ACCEPTED_COMPRESSED_MIME_TYPES.some((candidate) =>
+      contentType.includes(candidate),
+    );
+    return hasCompressedMime && hasSize && contentLength <= MAX_COMPRESSED_IMAGE_BYTES;
   } catch {
     return false;
   }

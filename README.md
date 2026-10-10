@@ -1,31 +1,109 @@
-# Welcome to your Lovable project
+# Michael Alvin Creative Portfolio
 
-TODO: Document your project here
+This portfolio reads its hero, gallery, videos, gear, footer, and site contact data from the CMS-backed Supabase project.
+
+Create a `.env.local` file in this folder with:
+
+```env
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_SUPABASE_STORAGE_BUCKET=gallery
+```
+
+## Performance guardrails
+
+Run the performance budget check before release:
+
+```bash
+npm run perf:budget
+```
+
+Current gzip budgets:
+
+- `main-js` (`index-*.js`): <= 60kb
+- `cms-content-js` (`cms-content-*.js`): <= 60kb
+- `main-css` (`index-*.css`): <= 14kb
+
+## Release checklist (mobile-first)
+
+1. iOS Safari and Android Chrome sanity pass on hero, gallery, videos, and contact modal.
+2. Confirm no horizontal overflow at 360px width.
+3. Verify gallery/video media stays lazy until needed.
+4. Run `npm run perf:budget` and keep all checks passing.
+
+## Supabase image compression webhook
+
+Edge Function path:
+
+- `supabase/functions/compress-image/index.ts`
+
+Compression profile:
+
+- Converts gallery uploads to **WebP**
+- Enforces max longest edge of **2400px**
+- Targets final file size of **<= 150KB**
+
+Deploy command:
+
+```bash
+supabase functions deploy compress-image --no-verify-jwt
+```
+
+Required secret before it will accept webhook calls:
+
+```bash
+supabase secrets set WEBHOOK_SECRET=<a-random-string-I-generate>
+```
+
+After deploy, create a **Database Webhook** in Supabase Dashboard:
+
+1. Go to **Database > Webhooks**
+2. Table: `storage.objects`
+3. Schema: `storage`
+4. Event: **Insert only**
+5. Type: **HTTP request**
+6. URL: your deployed `compress-image` function URL
+7. Add header: `x-webhook-secret` = same value as `WEBHOOK_SECRET`
+
+## Supabase user invite function (CMS admin)
+
+Edge Function path:
+
+- `supabase/functions/invite-cms-user/index.ts`
+
+Deploy command:
+
+```bash
+supabase functions deploy invite-cms-user
+```
+
+This function is called by the CMS Users page to invite users by email, create/update their
+`profiles` row, and assign role (`admin`, `editor`, or `viewer`). It only allows callers whose
+`profiles.role` is `admin`.
+
+## CMS image delivery settings column
+
+Run this SQL migration so the CMS Site Settings page can persist image compression parameters:
+
+```bash
+supabase db push
+```
+
+Migration file:
+
+- `supabase/migrations/20260620_add_image_delivery_settings.sql`
+- `supabase/migrations/20260620184100_add_gallery_original_size_bytes.sql`
+- `supabase/migrations/20260620191500_update_image_delivery_profile.sql`
 
 ## Mobile image loading
 
 Gallery and hero images are processed by `vite-imagetools` during development
-and builds. Their imports generate 320, 640, 960, and 1600 pixel-wide WebP
-variants at quality 80, capped at the original image width without upscaling.
-The browser selects a variant using `srcset` and `sizes`;
-image dimensions reserve space before loading. Original source files are preserved.
+and builds. Their imports generate responsive WebP variants capped at the
+original image width. Original source files are preserved.
 
-When adding gallery photos, use the same image query as existing imports:
-`?w=320;640;960;1600&format=webp&quality=80&as=metadata`.
-Keep `galleryImageSizes` in sync with gallery padding, gaps, and column counts.
-The lightbox uses these variants too, up to 1600 pixels wide.
-
-Gallery ordering is shuffled once per page mount. Mobile category filters scroll
-horizontally, and the lightbox supports keyboard focus, Escape, and scroll locking.
-Swipe horizontally across the lightbox image, use Left/Right arrow keys, or select
-the previous/next buttons to browse the active category in gallery order. The
-counter shows the current position; navigation stops at the first and last photos.
-Vertical gestures and pinch zoom are not used for photo navigation.
-The contact sheet scrolls within the available viewport. YouTube players load only
-after selecting Play; their preview thumbnails are loaded lazily.
+Gallery ordering is curated by default; visitors can shuffle the gallery and
+show additional items. Video players load only after selecting Play. The hero
+includes Work, Film, and Contact navigation, and the gallery links to the
+wallpaper collection.
 
 Run `npm run build` to generate production assets and `npm test` for component tests.
-
-The hero includes a compact Work / Film / Contact navigation row. Work and
-View My Work link to the gallery, Film links to the video section, and Contact
-opens the contact sheet. Section scrolling respects reduced-motion preferences.

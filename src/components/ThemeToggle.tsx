@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { motion, useMotionValue, useTransform } from "framer-motion";
 
 const ThemeToggle = () => {
   const [isDark, setIsDark] = useState(() => {
@@ -9,8 +8,7 @@ const ThemeToggle = () => {
     return true;
   });
 
-  const scrollY = useMotionValue(0);
-  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     const stored = localStorage.getItem("theme");
@@ -24,10 +22,12 @@ const ThemeToggle = () => {
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => scrollY.set(window.scrollY);
+    const handleScroll = () => {
+      setIsVisible(window.scrollY < 280);
+    };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [scrollY]);
+  }, []);
 
   const toggle = () => {
     const next = !isDark;
@@ -42,13 +42,13 @@ const ThemeToggle = () => {
   };
 
   return (
-    <motion.button
+    <button
       onClick={toggle}
-      className="fixed top-6 right-6 z-50 glass rounded-full px-5 py-2.5 text-xs font-medium tracking-widest uppercase text-foreground/80 hover:text-foreground cursor-pointer select-none transition-colors duration-700"
-      style={{ opacity, pointerEvents: useTransform(opacity, (v) => (v < 0.1 ? "none" : "auto")) as any }}
-      initial={{ opacity: 0, y: -12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: 1, ease: [0.16, 1, 0.3, 1] }}
+      className={`fixed top-6 right-6 z-50 glass rounded-full px-5 py-2.5 text-xs font-medium tracking-widest uppercase text-foreground/80 hover:text-foreground cursor-pointer select-none transition-all duration-300 ${
+        isVisible
+          ? "opacity-100 translate-y-0 pointer-events-auto"
+          : "opacity-0 -translate-y-2 pointer-events-none"
+      }`}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
     >
       <span className="flex items-center gap-2">
@@ -58,7 +58,7 @@ const ThemeToggle = () => {
         </svg>
         {isDark ? "Darkroom" : "Lightroom"}
       </span>
-    </motion.button>
+    </button>
   );
 };
 

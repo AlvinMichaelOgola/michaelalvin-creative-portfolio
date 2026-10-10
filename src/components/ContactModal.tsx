@@ -1,4 +1,5 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { useRef } from "react";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X, Mail, Instagram, Calendar } from "lucide-react";
 
 interface ContactModalProps {
@@ -7,45 +8,43 @@ interface ContactModalProps {
 }
 
 const ContactModal = ({ isOpen, onClose }: ContactModalProps) => {
+  const opener = useRef<HTMLElement | null>(null);
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
+    <DialogPrimitive.Root open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
+        <DialogPrimitive.Portal>
           {/* Backdrop */}
-          <motion.div
+          <DialogPrimitive.Overlay
             className="fixed inset-0 z-50 bg-background/60 backdrop-blur-xl"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            onClick={onClose}
           />
 
           {/* Sheet */}
-          <motion.div
-            className="fixed inset-x-0 bottom-0 z-50 max-h-[85vh] glass-strong rounded-t-[2rem] section-padding pt-8 pb-12"
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "100%" }}
-            transition={{ type: "spring", damping: 30, stiffness: 300 }}
+          <DialogPrimitive.Content
+            className="fixed inset-x-0 bottom-0 z-50 max-h-[85dvh] overflow-y-auto overscroll-contain bg-background border border-border md:glass-strong rounded-t-[2rem] section-padding pt-8 pb-[max(2rem,env(safe-area-inset-bottom))] focus:outline-none"
+            onOpenAutoFocus={() => {
+              opener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+            }}
+            onCloseAutoFocus={(event) => {
+              event.preventDefault();
+              opener.current?.focus();
+            }}
           >
             {/* Handle */}
             <div className="w-10 h-1 rounded-full bg-foreground/20 mx-auto mb-8" />
 
             {/* Close */}
-            <button
-              onClick={onClose}
-              className="absolute top-6 right-6 p-2 rounded-full glass text-muted-foreground hover:text-foreground transition-colors"
+            <DialogPrimitive.Close
+              aria-label="Close contact details"
+              className="absolute top-4 right-4 flex h-11 w-11 items-center justify-center rounded-full glass text-muted-foreground hover:text-foreground transition-colors"
             >
               <X size={18} />
-            </button>
+            </DialogPrimitive.Close>
 
-            <h3 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight mb-2">
+            <DialogPrimitive.Title className="text-2xl md:text-3xl font-bold text-foreground tracking-tight mb-2">
               Let's Connect
-            </h3>
-            <p className="text-muted-foreground text-sm mb-10 max-w-md">
+            </DialogPrimitive.Title>
+            <DialogPrimitive.Description className="text-muted-foreground text-sm mb-6 md:mb-10 max-w-md">
               Whether it's a commercial campaign, portrait session, or adventure shoot — I'd love to hear about your vision.
-            </p>
+            </DialogPrimitive.Description>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl">
               <a
@@ -77,10 +76,9 @@ const ContactModal = ({ isOpen, onClose }: ContactModalProps) => {
                 <span className="text-xs text-muted-foreground">Schedule a session<br />+254 797 347 822</span>
               </a>
             </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+          </DialogPrimitive.Content>
+        </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
   );
 };
 

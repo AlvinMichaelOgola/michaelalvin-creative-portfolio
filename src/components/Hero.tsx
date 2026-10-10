@@ -1,8 +1,9 @@
-import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
+import { motion, useMotionValue, useTransform, useSpring, useReducedMotion } from "framer-motion";
 import { useState, useRef } from "react";
 import { useIsMobile } from "../hooks/use-mobile";
-import heroPortrait from "@/assets/hero-portrait.jpg";
+import heroPortrait from "@/assets/hero-portrait.jpg?w=320;640;960;1600&format=webp&quality=80&as=metadata";
 import { ArrowRight } from "lucide-react";
+import { imageSrcSet } from "@/lib/responsive-image";
 
 const MARQUEE_TEXT = "COMMERCIAL • PORTRAIT • ADVENTURE • FILM • ";
 
@@ -30,10 +31,11 @@ const Hero = ({ onContactClick }: { onContactClick: () => void }) => {
   };
 
   const isMobile = useIsMobile();
+  const reducedMotion = useReducedMotion();
   return (
-    <section id="hero" className="min-h-screen section-padding flex items-center justify-center py-24 relative overflow-hidden">
+    <section id="hero" className="md:min-h-screen section-padding flex items-center justify-center pt-24 pb-16 md:py-24 relative overflow-hidden">
       {/* Teal radial glow behind content (mobile only) */}
-      {isMobile && (
+      {isMobile && !reducedMotion && (
         <div
           className="absolute pointer-events-none z-0"
           style={{
@@ -49,10 +51,23 @@ const Hero = ({ onContactClick }: { onContactClick: () => void }) => {
       )}
 
       <div className="w-full max-w-3xl mx-auto relative z-20 flex flex-col items-center text-center">
+        <nav aria-label="Section navigation" className="mb-8 flex items-center justify-center text-sm text-muted-foreground">
+          <a href="#gallery" className="inline-flex min-h-11 items-center rounded-full px-3 hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring">
+            Work
+          </a>
+          <span aria-hidden="true">·</span>
+          <a href="#video" className="inline-flex min-h-11 items-center rounded-full px-3 hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring">
+            Film
+          </a>
+          <span aria-hidden="true">·</span>
+          <button type="button" onClick={onContactClick} className="inline-flex min-h-11 items-center rounded-full px-3 hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring">
+            Contact
+          </button>
+        </nav>
         {/* Name */}
         <motion.h1
           className="text-5xl md:text-7xl lg:text-9xl font-bold tracking-tight leading-[0.9]"
-          initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
+          initial={reducedMotion ? false : { opacity: 0, y: isMobile ? 0 : 20, filter: isMobile ? "none" : "blur(4px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
         >
@@ -64,27 +79,32 @@ const Hero = ({ onContactClick }: { onContactClick: () => void }) => {
         {/* Portrait — 3D tilt */}
         <motion.div
           ref={imgRef}
-          className="mt-10 w-full max-w-md"
+          className="mt-6 md:mt-10 w-full max-w-[15rem] md:max-w-md"
           style={{ perspective: 800 }}
           onMouseMove={handleMouseMove}
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={handleMouseLeave}
-          initial={{ opacity: 0, scale: 0.95, filter: "blur(8px)" }}
+          initial={reducedMotion ? false : { opacity: 0, scale: isMobile ? 1 : 0.95, filter: isMobile ? "none" : "blur(8px)" }}
           animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
           transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
         >
           <motion.div
             className="relative aspect-[3/4] rounded-3xl overflow-hidden transition-shadow duration-500"
             style={{
-              rotateX,
-              rotateY,
+              rotateX: isMobile || reducedMotion ? 0 : rotateX,
+              rotateY: isMobile || reducedMotion ? 0 : rotateY,
               boxShadow: isHovering
                 ? "0 30px 60px -15px rgba(0,0,0,0.6)"
                 : "0 15px 30px -10px rgba(0,0,0,0.4)",
             }}
           >
             <img
-              src={heroPortrait}
+              src={heroPortrait[1].src}
+              srcSet={imageSrcSet(heroPortrait)}
+              sizes="(min-width: 768px) 448px, 240px"
+              width={heroPortrait[0].width}
+              height={heroPortrait[0].height}
+              fetchPriority="high"
               alt="Alvin Michael — visual storyteller based in Nairobi"
               className="w-full h-full object-cover"
             />
@@ -97,7 +117,7 @@ const Hero = ({ onContactClick }: { onContactClick: () => void }) => {
         {/* Subtitle */}
         <motion.p
           className="mt-8 text-sm md:text-base uppercase tracking-[0.3em] font-medium text-accent-teal"
-          initial={{ opacity: 0, y: 16, filter: "blur(4px)" }}
+          initial={reducedMotion ? false : { opacity: 0, y: isMobile ? 0 : 16, filter: isMobile ? "none" : "blur(4px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ duration: 0.7, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
         >
@@ -107,7 +127,7 @@ const Hero = ({ onContactClick }: { onContactClick: () => void }) => {
         {/* Body */}
         <motion.p
           className="mt-6 text-base md:text-lg text-muted-foreground leading-relaxed max-w-lg"
-          initial={{ opacity: 0, y: 16, filter: "blur(4px)" }}
+          initial={reducedMotion ? false : { opacity: 0, y: isMobile ? 0 : 16, filter: isMobile ? "none" : "blur(4px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ duration: 0.7, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
@@ -118,13 +138,14 @@ const Hero = ({ onContactClick }: { onContactClick: () => void }) => {
 
         {/* CTA */}
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
+          className="mt-8 flex flex-wrap items-center justify-center gap-3"
+          initial={reducedMotion ? false : { opacity: 0, y: isMobile ? 0 : 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
         >
           <button
             onClick={onContactClick}
-            className="hero-cta-contrast group mt-8 inline-flex items-center gap-2"
+            className="hero-cta-contrast group min-h-11 inline-flex items-center gap-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
             <span
               className="w-2 h-2 rounded-full animate-pulse"
@@ -133,6 +154,12 @@ const Hero = ({ onContactClick }: { onContactClick: () => void }) => {
             Contact Me
             <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
           </button>
+          <a
+            href="#gallery"
+            className="hero-cta min-h-11 inline-flex items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          >
+            View My Work
+          </a>
         </motion.div>
       </div>
 

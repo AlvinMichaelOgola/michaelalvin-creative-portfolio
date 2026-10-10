@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Hero from "@/components/Hero";
 import Gallery from "@/components/Gallery";
 import VideoTheater from "@/components/VideoTheater";
@@ -10,19 +10,8 @@ import ThemeToggle from "@/components/ThemeToggle";
 const Index = () => {
   const [contactOpen, setContactOpen] = useState(false);
 
-  useEffect(() => {
-    if (contactOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [contactOpen]);
-
   return (
-    <div className="bg-background text-foreground min-h-screen overflow-x-hidden relative">
+    <div className="bg-background text-foreground min-h-screen overflow-x-clip relative">
       <ThemeToggle />
       <Hero onContactClick={() => setContactOpen(true)} />
       <Gallery />

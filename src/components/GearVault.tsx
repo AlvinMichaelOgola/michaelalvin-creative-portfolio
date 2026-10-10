@@ -1,4 +1,5 @@
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const gear = [
   { title: "Sony a7iii", subtitle: "85mm f/1.8, 50mm F1.8 and 24-70mm F2.8", desc: "Primary body for portraits, video & commercial work" },
@@ -13,11 +14,13 @@ const gear = [
 ];
 
 const GearVault = () => {
+  const isMobile = useIsMobile();
+  const reducedMotion = useReducedMotion();
   return (
     <section className="section-padding py-10 md:py-24" id="gear">
       <motion.div
         className="mb-12"
-        initial={{ opacity: 0, y: 16 }}
+        initial={reducedMotion ? false : { opacity: 0, y: isMobile ? 0 : 16 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
@@ -31,7 +34,7 @@ const GearVault = () => {
           <motion.div
             key={item.title}
             className="surface-card rounded-3xl p-8 group transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_0_0_1px_hsla(0,0%,100%,0.1)]"
-            initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
+            initial={reducedMotion ? false : { opacity: 0, y: isMobile ? 0 : 20, filter: isMobile ? "none" : "blur(4px)" }}
             whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.5, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}

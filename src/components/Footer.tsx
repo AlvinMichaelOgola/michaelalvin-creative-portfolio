@@ -1,11 +1,14 @@
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Footer = ({ onContactClick }: { onContactClick: () => void }) => {
+  const isMobile = useIsMobile();
+  const reducedMotion = useReducedMotion();
   return (
     <footer className="section-padding py-10 text-center">
       <motion.h2
         className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground text-balance mx-auto max-w-3xl leading-[1.05]"
-        initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
+        initial={reducedMotion ? false : { opacity: 0, y: isMobile ? 0 : 20, filter: isMobile ? "none" : "blur(6px)" }}
         whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -16,7 +19,7 @@ const Footer = ({ onContactClick }: { onContactClick: () => void }) => {
       </motion.h2>
 
       <motion.div
-        initial={{ opacity: 0, y: 16 }}
+        initial={reducedMotion ? false : { opacity: 0, y: isMobile ? 0 : 16 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
